@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import logo from '../../assets/logorxdark.png'
 
 const Footer = () => {
   return (
@@ -7,12 +8,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
-          <div>
-            <h3 className="text-[#bfa174] font-bold text-lg mb-3">SustainRx</h3>
-            <p className="text-sm">
-              Code health diagnostics for modern repositories.
-              Detect symptoms early and keep your codebase healthy.
-            </p>
+          <div className="w-100% flex justify-end mr-8">
+            <img src={ logo } className="w-16 h-auto flex justify-end" alt="" />
           </div>
 
           {/* Services */}
@@ -44,8 +41,8 @@ const Footer = () => {
 
           {/* Connect */}
           <div>
-            <h4 className="text-[#bfa174] font-semibold mb-3">Connect</h4>
-            <ul className="flex space-y-2 text-sm">
+            <h4 className="text-[#bfa174] font-semibold mb-3 ml-8">Connect</h4>
+            <ul className="space-y-2 text-sm ml-8">
               <li>
                 <a
                   href="https://github.com/mlehay79"
