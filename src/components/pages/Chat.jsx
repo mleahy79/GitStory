@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { chatWithClaude } from "../../services/firebase";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { parseGitHubUrl, getRepoInfo, getCommits, getRepoTree, getFileContent } from "../../services/github";
+import { parseGitHubUrl, getRepoInfo, getCommits, getRepoTree, getFileContent, getCommitsWithDetails } from "../../services/github";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -26,6 +26,12 @@ const Chat = () => {
   const [loadedFileContents, setLoadedFileContents] = useState({});
   const [repoOwner, setRepoOwner] = useState("");
   const [repoName, setRepoName] = useState("");
+
+  // Commit analysis state
+  const [showCommitBrowser, setShowCommitBrowser] = useState(false);
+  const [detailedCommits, setDetailedCommits] = useState([]);
+  const [loadingCommits, setLoadingCommits] = useState(false);
+  const [selectedCommits, setSelectedCommits] = useState([]);
 
   // Load repo context if URL provided
   useEffect(() => {
@@ -72,6 +78,70 @@ const Chat = () => {
     } finally {
       setLoadingRepo(false);
     }
+  };
+
+  const loadDetailedCommits = async () => {
+    if (!repoOwner || !repoName) return;
+    setLoadingCommits(true);
+    try {
+      const commits = await getCommitsWithDetails(repoOwner, repoName, 20);
+      setDetailedCommits(commits);
+      setShowCommitBrowser(true);
+    } catch (err) {
+      setError("Failed to load commit details.");
+    } finally {
+      setLoadingCommits(false);
+    }
+  };
+
+  const toggleCommitSelection = (sha) => {
+    if (selectedCommits.includes(sha)) {
+      setSelectedCommits(prev => prev.filter(s => s !== sha));
+    } else {
+      if (selectedCommits.length >= 5) {
+        setError("Maximum 5 commits can be selected at once.");
+        return;
+      }
+      setSelectedCommits(prev => [...prev, sha]);
+    }
+  };
+
+  const analyzeSelectedCommits = () => {
+    if (selectedCommits.length === 0) return;
+
+    const commitsToAnalyze = detailedCommits.filter(c =>
+      selectedCommits.includes(c.sha)
+    );
+
+    // Build a detailed prompt for commit analysis
+    let analysisPrompt = "Please analyze the following commit(s) and evaluate if the commit message(s) accurately describe the scope and scale of the actual code changes. For each commit, provide:\n\n1. A summary of what the code actually changed\n2. Whether the commit message accurately describes these changes\n3. A suggested improved commit message if needed\n\n";
+
+    commitsToAnalyze.forEach((commit, idx) => {
+      analysisPrompt += `---\n**Commit ${idx + 1}:**\n`;
+      analysisPrompt += `SHA: ${commit.sha.substring(0, 7)}\n`;
+      analysisPrompt += `Message: "${commit.message}"\n`;
+      analysisPrompt += `Author: ${commit.author}\n`;
+      analysisPrompt += `Date: ${new Date(commit.date).toLocaleDateString()}\n`;
+
+      if (commit.stats) {
+        analysisPrompt += `Stats: +${commit.stats.additions} -${commit.stats.deletions} (${commit.stats.total} total changes)\n`;
+      }
+
+      if (commit.files && commit.files.length > 0) {
+        analysisPrompt += `\nFiles changed (${commit.files.length}):\n`;
+        commit.files.forEach(f => {
+          analysisPrompt += `- ${f.filename} (${f.status}): +${f.additions} -${f.deletions}\n`;
+          if (f.patch) {
+            analysisPrompt += `\`\`\`diff\n${f.patch}\n\`\`\`\n`;
+          }
+        });
+      }
+      analysisPrompt += "\n";
+    });
+
+    // Set the message and trigger submission
+    setMessage(analysisPrompt);
+    setShowCommitBrowser(false);
   };
 
   const loadFileTree = async () => {
@@ -320,12 +390,23 @@ const Chat = () => {
                     {loadingFiles ? "Loading..." : "Browse Files"}
                   </button>
                   <button
+                    type="button"
+                    onClick={loadDetailedCommits}
+                    disabled={loadingCommits}
+                    className="text-[#178582] text-sm hover:underline"
+                  >
+                    {loadingCommits ? "Loading..." : "Analyze Commits"}
+                  </button>
+                  <button
                     onClick={() => {
                       setRepoContext(null);
                       setRepoInput("");
                       setFileTree([]);
                       setSelectedFiles([]);
                       setShowFileBrowser(false);
+                      setDetailedCommits([]);
+                      setSelectedCommits([]);
+                      setShowCommitBrowser(false);
                     }}
                     className="text-gray-500 hover:text-gray-300"
                   >
@@ -400,6 +481,97 @@ const Chat = () => {
                 <p className="text-gray-500 text-xs text-center py-2">
                   Showing first 100 files...
                 </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Commit Browser Modal */}
+        {showCommitBrowser && (
+          <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-4 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-semibold">
+                Select Commits to Analyze (max 5)
+              </h3>
+              <div className="flex items-center gap-3">
+                {selectedCommits.length > 0 && (
+                  <button
+                    onClick={analyzeSelectedCommits}
+                    className="px-3 py-1 bg-[#178582] text-white text-sm rounded hover:bg-[#1a9d9a] transition-colors"
+                  >
+                    Analyze {selectedCommits.length} Commit(s)
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowCommitBrowser(false)}
+                  className="text-gray-500 hover:text-white"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+            <div className="max-h-80 overflow-y-auto space-y-2">
+              {detailedCommits.length === 0 ? (
+                <p className="text-gray-500 text-sm">No commits found</p>
+              ) : (
+                detailedCommits.map(commit => (
+                  <button
+                    key={commit.sha}
+                    onClick={() => toggleCommitSelection(commit.sha)}
+                    className={`w-full text-left px-3 py-3 rounded transition-colors ${
+                      selectedCommits.includes(commit.sha)
+                        ? "bg-[#178582]/30 border border-[#178582]"
+                        : "bg-[#0A1828] hover:bg-[#0A1828]/70 border border-transparent"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-gray-200 text-sm font-medium truncate">
+                          {commit.message?.split("\n")[0]}
+                        </p>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                          <span>{commit.sha.substring(0, 7)}</span>
+                          <span>{commit.author}</span>
+                          <span>{new Date(commit.date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        {commit.stats && (
+                          <div className="text-xs">
+                            <span className="text-green-400">+{commit.stats.additions}</span>
+                            {" / "}
+                            <span className="text-red-400">-{commit.stats.deletions}</span>
+                          </div>
+                        )}
+                        {commit.files && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {commit.files.length} file(s)
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {selectedCommits.includes(commit.sha) && commit.files && commit.files.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-gray-700">
+                        <p className="text-xs text-gray-400 mb-1">Files changed:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {commit.files.slice(0, 5).map(f => (
+                            <span
+                              key={f.filename}
+                              className="text-xs px-2 py-0.5 bg-[#0A1828] rounded text-gray-400"
+                            >
+                              {f.filename.split("/").pop()}
+                            </span>
+                          ))}
+                          {commit.files.length > 5 && (
+                            <span className="text-xs text-gray-500">
+                              +{commit.files.length - 5} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                ))
               )}
             </div>
           </div>

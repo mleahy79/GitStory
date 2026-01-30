@@ -39,7 +39,14 @@ exports.chat = onCall(
           "analyzes GitHub repositories and provides insights about code " +
           "health, technical debt, and best practices. You speak in a " +
           "medical/health metaphor - treating code issues as \"symptoms\", " +
-          "improvements as \"treatments\", and the codebase as a \"patient\".";
+          "improvements as \"treatments\", and the codebase as a \"patient\"." +
+          "\n\nWhen analyzing commit messages, evaluate whether the message " +
+          "accurately describes what the code changes actually do. Consider:" +
+          "\n- Does the message describe the scope (how many files/areas)?" +
+          "\n- Does it describe the type of change (fix, feature, refactor)?" +
+          "\n- Is it specific enough to understand without reading the code?" +
+          "\n- Does it follow good commit message conventions?" +
+          "\nProvide improved commit message suggestions when appropriate.";
 
         if (repoContext) {
           systemPrompt += "\n\nRepository Context:\n" +

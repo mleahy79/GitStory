@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }) => {
   const signInWithGitHub = async () => {
     try {
       const result = await signInWithPopup(auth, githubProvider);
-      // Get the GitHub access token for API calls
       const credential = result._tokenResponse;
       if (credential?.oauthAccessToken) {
         setGithubToken(credential.oauthAccessToken);

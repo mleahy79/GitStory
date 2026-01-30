@@ -107,6 +107,48 @@ export async function getRepoTree(owner, repo, branch = "main") {
   return response.json();
 }
 
+// Fetch commits with full details (for commit analysis)
+export async function getCommitsWithDetails(owner, repo, count = 10) {
+  // First get the list of commits
+  const commits = await getCommits(owner, repo, 1, count);
+
+  // Then fetch details for each commit (includes file changes)
+  const detailedCommits = await Promise.all(
+    commits.map(async (commit) => {
+      try {
+        const details = await getCommitDetails(owner, repo, commit.sha);
+        return {
+          sha: commit.sha,
+          message: commit.commit?.message,
+          author: commit.commit?.author?.name,
+          date: commit.commit?.author?.date,
+          stats: details.stats, // { total, additions, deletions }
+          files: details.files?.map(f => ({
+            filename: f.filename,
+            status: f.status, // added, removed, modified, renamed
+            additions: f.additions,
+            deletions: f.deletions,
+            changes: f.changes,
+            patch: f.patch?.substring(0, 2000), // Truncate large patches
+          })) || [],
+        };
+      } catch {
+        // If we can't get details, return basic info
+        return {
+          sha: commit.sha,
+          message: commit.commit?.message,
+          author: commit.commit?.author?.name,
+          date: commit.commit?.author?.date,
+          stats: null,
+          files: [],
+        };
+      }
+    })
+  );
+
+  return detailedCommits;
+}
+
 // Fetch file content (base64 encoded for files up to 1MB)
 export async function getFileContent(owner, repo, path) {
   const response = await fetch(

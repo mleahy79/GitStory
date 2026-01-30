@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -6,7 +6,14 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { signInWithGitHub } = useAuth();
+  const { signInWithGitHub, user, loading } = useAuth();
+
+  // Redirect to chat once authenticated (after redirect flow completes)
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/chat");
+    }
+  }, [user, loading, navigate]);
 
   const handleGitHubLogin = async () => {
     setIsLoading(true);
@@ -15,13 +22,24 @@ const Login = () => {
     const result = await signInWithGitHub();
 
     if (result.success) {
-      navigate("/");
+      navigate("/chat");
     } else {
       setError(result.error);
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
+
+  // Show full-page loading while popup is open or auth is resolving
+  if (isLoading || loading) {
+    return (
+      <main className="min-h-screen bg-[#0A1828] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#178582] mx-auto mb-4"></div>
+          <p className="text-gray-400">Signing you in...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#0A1828] flex items-center justify-center px-4">
