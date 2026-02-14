@@ -7,12 +7,12 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 
 ## HIGH PRIORITY (would look broken without these)
 
-- [ ] 1. Wire up 404 catch-all route - NotFound.jsx exists but isn't in App.js router
-- [ ] 2. Add error boundary component - app crashes completely on any page error
-- [ ] 3. Add route guards - /profile, /settings, /chat accessible without login
+- [x] 1. Wire up 404 catch-all route - NotFound.jsx exists but isn't in App.js router
+- [x] 2. Add error boundary component - app crashes completely on any page error
+- [x] 3. Add route guards - /profile, /settings, /chat accessible without login
+- [x] 6. Add Pricing, Privacy, Terms, Profile, Settings pages to router
 - [ ] 4. Fix Settings page - toggles don't save, delete account does nothing, make it feel functional (localStorage is fine)
 - [ ] 5. Fix Profile page - stats are hardcoded (3, 12, 1, 2), pull real data or derive from usage
-- [ ] 6. Add Pricing page to router and navbar/footer navigation
 
 ## MEDIUM PRIORITY (polish that makes it feel real)
 
@@ -35,8 +35,9 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 
 ## Session Notes
 - Last updated: 2026-02-14
-- Current status: Starting from item #1
+- Current status: Items 1-3 and 6 done. Next up: #4 (Settings) and #5 (Profile)
 - Note: When resuming, check items off as completed and add session notes below
 
 ### Session Log
 - 2026-02-14: Initial audit complete. Checklist created. No items started yet.
+- 2026-02-14: Completed #1 (404 route), #2 (ErrorBoundary), #3 (ProtectedRoute guard), #6 (all pages in router). Build passes.
