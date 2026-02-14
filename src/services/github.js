@@ -1,8 +1,16 @@
 // GitHub API service
-// For now, using unauthenticated requests (60 requests/hour limit)
-// Later: add authentication for 5,000 requests/hour
+// Authenticated requests: 5,000/hour, unauthenticated: 60/hour
 
 const BASE_URL = "https://api.github.com";
+
+function getHeaders() {
+  const headers = { "Accept": "application/vnd.github.v3+json" };
+  const token = localStorage.getItem("githubToken");
+  if (token) {
+    headers["Authorization"] = `token ${token}`;
+  }
+  return headers;
+}
 
 // Parse GitHub URL to extract owner and repo name
 export function parseGitHubUrl(url) {
@@ -18,7 +26,7 @@ export function parseGitHubUrl(url) {
 
 // Fetch repository info
 export async function getRepoInfo(owner, repo) {
-  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}`);
+  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}`, { headers: getHeaders() });
   if (!response.ok) {
     throw new Error(`Failed to fetch repo: ${response.status}`);
   }
@@ -28,8 +36,13 @@ export async function getRepoInfo(owner, repo) {
 // Fetch commits (paginated, default 30 per page)
 export async function getCommits(owner, repo, page = 1, perPage = 30) {
   const response = await fetch(
-    `${BASE_URL}/repos/${owner}/${repo}/commits?page=${page}&per_page=${perPage}`
+    `${BASE_URL}/repos/${owner}/${repo}/commits?page=${page}&per_page=${perPage}`,
+    { headers: getHeaders() }
   );
+  if (response.status === 409) {
+    // 409 = empty repository (no commits)
+    return [];
+  }
   if (!response.ok) {
     throw new Error(`Failed to fetch commits: ${response.status}`);
   }
@@ -54,7 +67,10 @@ export async function getAllCommits(owner, repo, maxPages = 10) {
 
 // Fetch a single commit with full details (includes file changes)
 export async function getCommitDetails(owner, repo, sha) {
-  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}/commits/${sha}`);
+  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}/commits/${sha}`, { headers: getHeaders() });
+  if (response.status === 409) {
+    return { stats: null, files: [] };
+  }
   if (!response.ok) {
     throw new Error(`Failed to fetch commit details: ${response.status}`);
   }
@@ -64,8 +80,12 @@ export async function getCommitDetails(owner, repo, sha) {
 // Fetch contributors
 export async function getContributors(owner, repo, perPage = 30) {
   const response = await fetch(
-    `${BASE_URL}/repos/${owner}/${repo}/contributors?per_page=${perPage}`
+    `${BASE_URL}/repos/${owner}/${repo}/contributors?per_page=${perPage}`,
+    { headers: getHeaders() }
   );
+  if (response.status === 409 || response.status === 204) {
+    return [];
+  }
   if (!response.ok) {
     throw new Error(`Failed to fetch contributors: ${response.status}`);
   }
@@ -74,7 +94,7 @@ export async function getContributors(owner, repo, perPage = 30) {
 
 // Fetch languages breakdown
 export async function getLanguages(owner, repo) {
-  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}/languages`);
+  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}/languages`, { headers: getHeaders() });
   if (!response.ok) {
     throw new Error(`Failed to fetch languages: ${response.status}`);
   }
@@ -84,8 +104,12 @@ export async function getLanguages(owner, repo) {
 // Fetch issues (includes PRs by default)
 export async function getIssues(owner, repo, state = "all", perPage = 30) {
   const response = await fetch(
-    `${BASE_URL}/repos/${owner}/${repo}/issues?state=${state}&per_page=${perPage}`
+    `${BASE_URL}/repos/${owner}/${repo}/issues?state=${state}&per_page=${perPage}`,
+    { headers: getHeaders() }
   );
+  if (response.status === 409) {
+    return [];
+  }
   if (!response.ok) {
     throw new Error(`Failed to fetch issues: ${response.status}`);
   }
@@ -95,7 +119,8 @@ export async function getIssues(owner, repo, state = "all", perPage = 30) {
 // Fetch repository file tree
 export async function getRepoTree(owner, repo, branch = "main") {
   const response = await fetch(
-    `${BASE_URL}/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`
+    `${BASE_URL}/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
+    { headers: getHeaders() }
   );
   if (!response.ok) {
     // Try 'master' if 'main' fails
@@ -152,7 +177,8 @@ export async function getCommitsWithDetails(owner, repo, count = 10) {
 // Fetch file content (base64 encoded for files up to 1MB)
 export async function getFileContent(owner, repo, path) {
   const response = await fetch(
-    `${BASE_URL}/repos/${owner}/${repo}/contents/${path}`
+    `${BASE_URL}/repos/${owner}/${repo}/contents/${path}`,
+    { headers: getHeaders() }
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch file: ${response.status}`);

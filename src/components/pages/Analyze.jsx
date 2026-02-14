@@ -1,26 +1,25 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
+import { useLastRepo } from "../../hooks/useLastRepo";
 
 const Analyze = () => {
-  const [searchParams] = useSearchParams();
-  const repoUrl = searchParams.get("repo");
+  const { repoUrl, setSearchParams } = useLastRepo();
+  const [repoInput, setRepoInput] = useState("");
 
   const [repoInfo, setRepoInfo] = useState(null);
   const [commits, setCommits] = useState([]);
   const [contributors, setContributors] = useState([]);
   const [languages, setLanguages] = useState({});
   const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      if (!repoUrl) {
-        setError("No repository URL provided");
-        setLoading(false);
-        return;
-      }
+      if (!repoUrl) return;
+
+      setLoading(true);
+      setError(null);
 
       try {
         const { owner, repo } = parseGitHubUrl(repoUrl);
@@ -60,6 +59,51 @@ const Analyze = () => {
     );
   }
 
+  const handleRepoSubmit = (e) => {
+    e.preventDefault();
+    if (repoInput.trim()) {
+      setSearchParams({ repo: repoInput.trim() });
+    }
+  };
+
+  if (!repoUrl) {
+    return (
+      <main className="min-h-screen bg-[#0A1828]">
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-[#178582] mb-4">
+              Repository <span className="text-[#bfa174]">Checkup</span>
+            </h2>
+            <p className="text-xl text-gray-400">
+              Enter a GitHub repository URL to run a full diagnostic scan.
+            </p>
+          </div>
+          <form onSubmit={handleRepoSubmit} className="max-w-2xl mx-auto">
+            <div className="flex gap-4">
+              <input
+                type="text"
+                id="analyze-repo-url"
+                name="analyze-repo-url"
+                autoComplete="off"
+                value={repoInput}
+                onChange={(e) => setRepoInput(e.target.value)}
+                placeholder="https://github.com/username/repository"
+                className="flex-1 px-4 py-3 bg-[#1a2d3d] border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-[#178582] focus:border-transparent outline-none"
+              />
+              <button
+                type="submit"
+                disabled={!repoInput.trim()}
+                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
+              >
+                Start Checkup
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    );
+  }
+
   if (error) {
     return (
       <main className="min-h-screen bg-[#0A1828]">
@@ -79,9 +123,17 @@ const Analyze = () => {
         {/* Patient Chart Header */}
         {repoInfo && (
           <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6 mb-6">
-            <h2 className="text-2xl font-bold text-[#bfa174] mb-2">
-              Patient: {repoInfo.full_name}
-            </h2>
+            <div className="flex justify-between items-start mb-2">
+              <h2 className="text-2xl font-bold text-[#bfa174]">
+                Patient: {repoInfo.full_name}
+              </h2>
+              <button
+                onClick={() => setSearchParams({})}
+                className="px-4 py-1.5 text-sm border border-gray-500 text-gray-400 rounded-lg hover:border-white hover:text-white transition-colors whitespace-nowrap"
+              >
+                New Checkup
+              </button>
+            </div>
             <p className="text-gray-400 mb-4">{repoInfo.description}</p>
             <div className="flex flex-wrap gap-6 text-sm text-gray-400">
               <span>Popularity: {repoInfo.stargazers_count} stars</span>

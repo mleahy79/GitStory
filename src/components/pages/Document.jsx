@@ -1,26 +1,25 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
+import { useLastRepo } from "../../hooks/useLastRepo";
 
 const Document = () => {
-  const [searchParams] = useSearchParams();
-  const repoUrl = searchParams.get("repo");
+  const { repoUrl, setSearchParams } = useLastRepo();
+  const [repoInput, setRepoInput] = useState("");
 
   const [repoInfo, setRepoInfo] = useState(null);
   const [commits, setCommits] = useState([]);
   const [contributors, setContributors] = useState([]);
   const [languages, setLanguages] = useState({});
   const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      if (!repoUrl) {
-        setError("No repository URL provided");
-        setLoading(false);
-        return;
-      }
+      if (!repoUrl) return;
+
+      setLoading(true);
+      setError(null);
 
       try {
         const { owner, repo } = parseGitHubUrl(repoUrl);
@@ -52,6 +51,56 @@ const Document = () => {
     window.print();
   };
 
+  const handleDownloadPDF = () => {
+    // Uses the browser's print dialog with "Save as PDF" as the destination
+    window.print();
+  };
+
+  const handleRepoSubmit = (e) => {
+    e.preventDefault();
+    if (repoInput.trim()) {
+      setSearchParams({ repo: repoInput.trim() });
+    }
+  };
+
+  if (!repoUrl) {
+    return (
+      <main className="min-h-screen bg-[#0A1828]">
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-[#178582] mb-4">
+              Generate <span className="text-[#bfa174]">Report</span>
+            </h2>
+            <p className="text-xl text-gray-400">
+              Enter a GitHub repository URL to generate a printable health report.
+            </p>
+          </div>
+          <form onSubmit={handleRepoSubmit} className="max-w-2xl mx-auto">
+            <div className="flex gap-4">
+              <input
+                type="text"
+                id="document-repo-url"
+                name="document-repo-url"
+                autoComplete="off"
+                value={repoInput}
+                onChange={(e) => setRepoInput(e.target.value)}
+                placeholder="https://github.com/username/repository"
+                className="flex-1 px-4 py-3 bg-[#1a2d3d] border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-[#178582] focus:border-transparent outline-none"
+              />
+              <button
+                type="submit"
+                disabled={!repoInput.trim()}
+                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
+              >
+                Generate Report
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-white p-8">
@@ -64,9 +113,12 @@ const Document = () => {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-white p-8">
-        <div className="max-w-4xl mx-auto text-center py-16">
-          <p className="text-red-600">{error}</p>
+      <main className="min-h-screen bg-[#0A1828]">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="bg-red-900/30 border border-red-500 rounded-lg p-6">
+            <h2 className="text-red-400 font-semibold mb-2">Report Generation Failed</h2>
+            <p className="text-red-300">{error}</p>
+          </div>
         </div>
       </main>
     );
@@ -84,16 +136,39 @@ const Document = () => {
 
   return (
     <>
-      {/* Print Button - Hidden when printing */}
-      <div className="print:hidden bg-[#0A1828] p-4 sticky top-0 z-10">
+      {/* Toolbar - Hidden when printing */}
+      <div className="print:hidden bg-[#0A1828] p-4 sticky top-0 z-10 border-b border-gray-700">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h2 className="text-white font-semibold">Repository Health Report</h2>
-          <button
-            onClick={handlePrint}
-            className="px-6 py-2 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
-          >
-            Print Report
-          </button>
+          <div>
+            <h2 className="text-white font-semibold">Report Preview</h2>
+            <p className="text-gray-400 text-sm">{repoInfo?.full_name}</p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setSearchParams({})}
+              className="px-5 py-2 border border-gray-500 text-gray-400 font-semibold rounded-lg hover:border-white hover:text-white transition-colors flex items-center gap-2"
+            >
+              New Report
+            </button>
+            <button
+              onClick={handlePrint}
+              className="px-5 py-2 border border-[#178582] text-[#178582] font-semibold rounded-lg hover:bg-[#178582] hover:text-white transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Print
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              className="px-5 py-2 bg-[#bfa174] text-[#0A1828] font-semibold rounded-lg hover:bg-[#d4b68a] transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Save as PDF
+            </button>
+          </div>
         </div>
       </div>
 

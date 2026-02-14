@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { chatWithClaude } from "../../services/firebase";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { parseGitHubUrl, getRepoInfo, getCommits, getRepoTree, getFileContent, getCommitsWithDetails } from "../../services/github";
+import { useLastRepo } from "../../hooks/useLastRepo";
 
 const Chat = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const repoUrl = searchParams.get("repo");
+  const { repoUrl } = useLastRepo();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -358,6 +358,9 @@ const Chat = () => {
           <form onSubmit={handleLoadRepo} className="flex gap-3">
             <input
               type="text"
+              id="repo-url"
+              name="repo-url"
+              autoComplete="off"
               value={repoInput}
               onChange={(e) => setRepoInput(e.target.value)}
               placeholder="Enter GitHub repository URL (e.g., https://github.com/facebook/react)"
@@ -633,6 +636,9 @@ const Chat = () => {
         <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
           <form onSubmit={handleSubmit}>
             <textarea
+              id="chat-message"
+              name="chat-message"
+              autoComplete="off"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={repoContext

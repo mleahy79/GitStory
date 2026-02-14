@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import logo from '../../assets/logorxdark.png'
 
@@ -6,44 +5,44 @@ const Footer = () => {
   return (
     <footer className="bg-[#0a1828] border-t border-gray-700 text-gray-400 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="flex flex-col items-center gap-8 md:grid md:grid-cols-3 mb-8">
           {/* Brand */}
-          <div className="w-100% flex justify-end mr-8">
-            <img src={ logo } className="w-16 h-auto flex justify-end" alt="" />
+          <div className="flex justify-center md:justify-end md:mr-8">
+            <img src={ logo } className="w-16 h-auto" alt="" />
           </div>
 
           {/* Services */}
           <div className="text-center">
             <h4 className="text-[#bfa174] font-semibold mb-3">Services</h4>
-            <ul className="flex flex-wrap justify-center gap-4 text-sm">
+            <ul className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 text-sm">
               <li>
                 <Link to="/" className="hover:text-[#178582] transition-colors">
                   Checkup
                 </Link>
               </li>
               <li>
-                <Link to="/" className="hover:text-[#178582] transition-colors">
+                <Link to="/hotspots" className="hover:text-[#178582] transition-colors">
                   Hotspot Scan
                 </Link>
               </li>
               <li>
-                <Link to="/" className="hover:text-[#178582] transition-colors">
-                  Repo Query
+                <Link to="/chat" className="hover:text-[#178582] transition-colors">
+                  Code Diagnostic
                 </Link>
               </li>
               <li>
-                <Link to="/" className="hover:text-[#178582] transition-colors">
-                  Documentation
+                <Link to="/document" className="hover:text-[#178582] transition-colors">
+                  Document
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Connect */}
-          <div>
-            <h4 className="text-[#bfa174] font-semibold mb-3 ml-8">Connect</h4>
-            <ul className="space-y-2 text-sm ml-8">
-              <li>
+          <div className="text-center md:text-left">
+            <h4 className="text-[#bfa174] font-semibold mb-3 md:ml-8">Connect</h4>
+            <ul className="space-y-2 text-sm md:ml-8">
+              <li className="flex justify-center md:justify-start">
                 <a
                   href="https://github.com/mlehay79"
                   target="_blank"
