@@ -60,6 +60,8 @@ const Hotspots = () => {
           .slice(0, 20);
 
         setFileHotspots(hotspots);
+        const prev = parseInt(localStorage.getItem("sustainrx_stats_hotspots") || "0", 10);
+        localStorage.setItem("sustainrx_stats_hotspots", prev + 1);
 
         // Find stale issues (open for 30+ days, no PR association)
         const now = new Date();

@@ -1,7 +1,31 @@
 import { useAuth } from "../../context/AuthContext";
 
+const TRIAL_DAYS = 14;
+
+const getTrialDaysRemaining = (creationTime) => {
+  if (!creationTime) return TRIAL_DAYS;
+  const created = new Date(creationTime).getTime();
+  const now = Date.now();
+  const elapsed = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+  return Math.max(0, TRIAL_DAYS - elapsed);
+};
+
+const getStat = (key) => parseInt(localStorage.getItem(key) || "0", 10);
+
 const Profile = () => {
   const { user } = useAuth();
+
+  const trialDaysRemaining = getTrialDaysRemaining(user?.metadata?.creationTime);
+  const trialLabel = trialDaysRemaining > 0
+    ? `Free Trial — ${trialDaysRemaining} day${trialDaysRemaining === 1 ? "" : "s"} remaining`
+    : "Free Trial — Expired";
+
+  const stats = {
+    scans: getStat("sustainrx_stats_scans"),
+    queries: getStat("sustainrx_stats_queries"),
+    reports: getStat("sustainrx_stats_reports"),
+    hotspots: getStat("sustainrx_stats_hotspots"),
+  };
 
   return (
     <main className="min-h-screen bg-[#0A1828]">
@@ -27,8 +51,12 @@ const Profile = () => {
                 {user?.displayName || "User"}
               </h3>
               <p className="text-gray-400">{user?.email || "No email on file"}</p>
-              <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-[#178582]/20 text-[#178582] border border-[#178582]/40 rounded-full">
-                Free Trial
+              <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
+                trialDaysRemaining > 0
+                  ? "bg-[#178582]/20 text-[#178582] border border-[#178582]/40"
+                  : "bg-red-900/20 text-red-400 border border-red-900/40"
+              }`}>
+                {trialDaysRemaining > 0 ? "Free Trial" : "Trial Expired"}
               </span>
             </div>
           </div>
@@ -65,29 +93,31 @@ const Profile = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Plan</span>
-              <span className="text-[#178582] font-semibold">Free Trial — 14 days remaining</span>
+              <span className={`font-semibold ${trialDaysRemaining > 0 ? "text-[#178582]" : "text-red-400"}`}>
+                {trialLabel}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Usage Stats (facade) */}
+        {/* Usage Stats */}
         <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-8">
           <h3 className="text-lg font-semibold text-[#bfa174] mb-4">Usage This Month</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-[#178582]">3</p>
+              <p className="text-2xl font-bold text-[#178582]">{stats.scans}</p>
               <p className="text-xs text-gray-500 mt-1">Repo Scans</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-[#178582]">12</p>
+              <p className="text-2xl font-bold text-[#178582]">{stats.queries}</p>
               <p className="text-xs text-gray-500 mt-1">AI Queries</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-[#178582]">1</p>
+              <p className="text-2xl font-bold text-[#178582]">{stats.reports}</p>
               <p className="text-xs text-gray-500 mt-1">Reports</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-[#178582]">2</p>
+              <p className="text-2xl font-bold text-[#178582]">{stats.hotspots}</p>
               <p className="text-xs text-gray-500 mt-1">Hotspot Scans</p>
             </div>
           </div>

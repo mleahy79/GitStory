@@ -11,8 +11,8 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 - [x] 2. Add error boundary component - app crashes completely on any page error
 - [x] 3. Add route guards - /profile, /settings, /chat accessible without login
 - [x] 6. Add Pricing, Privacy, Terms, Profile, Settings pages to router
-- [ ] 4. Fix Settings page - toggles don't save, delete account does nothing, make it feel functional (localStorage is fine)
-- [ ] 5. Fix Profile page - stats are hardcoded (3, 12, 1, 2), pull real data or derive from usage
+- [x] 4. Fix Settings page - toggles don't save, delete account does nothing, make it feel functional (localStorage is fine)
+- [x] 5. Fix Profile page - stats are hardcoded (3, 12, 1, 2), pull real data or derive from usage
 
 ## MEDIUM PRIORITY (polish that makes it feel real)
 
@@ -34,10 +34,11 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 ---
 
 ## Session Notes
-- Last updated: 2026-02-14
-- Current status: Items 1-3 and 6 done. Next up: #4 (Settings) and #5 (Profile)
+- Last updated: 2026-02-24
+- Current status: Items 1-6 done. Next up: #7 (toast system) and #8 (loading states)
 - Note: When resuming, check items off as completed and add session notes below
 
 ### Session Log
 - 2026-02-14: Initial audit complete. Checklist created. No items started yet.
 - 2026-02-14: Completed #1 (404 route), #2 (ErrorBoundary), #3 (ProtectedRoute guard), #6 (all pages in router). Build passes.
+- 2026-02-24: Completed #4 (Settings - localStorage persist, delete account confirmation modal with Firebase deleteUser). Completed #5 (Profile - dynamic trial days from creationTime, real usage stats from localStorage counters tracked in Analyze/Chat/Hotspots).

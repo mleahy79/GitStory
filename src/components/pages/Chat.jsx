@@ -233,6 +233,8 @@ const Chat = () => {
 
       const response = await chatWithClaude(userMessage, enhancedContext);
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      const prev = parseInt(localStorage.getItem("sustainrx_stats_queries") || "0", 10);
+      localStorage.setItem("sustainrx_stats_queries", prev + 1);
     } catch (err) {
       console.error("Chat error:", err);
       setError("Failed to get response. Please try again.");
@@ -243,6 +245,8 @@ const Chat = () => {
   };
 
   const handlePrintConversation = () => {
+    const prev = parseInt(localStorage.getItem("sustainrx_stats_reports") || "0", 10);
+    localStorage.setItem("sustainrx_stats_reports", prev + 1);
     const printWindow = window.open("", "_blank");
     const generatedDate = new Date().toLocaleDateString("en-US", {
       year: "numeric",

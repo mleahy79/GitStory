@@ -38,6 +38,8 @@ const Analyze = () => {
         setContributors(contributorsData);
         setLanguages(languagesData);
         setIssues(issuesData);
+        const prev = parseInt(localStorage.getItem("sustainrx_stats_scans") || "0", 10);
+        localStorage.setItem("sustainrx_stats_scans", prev + 1);
       } catch (err) {
         setError(err.message);
       } finally {

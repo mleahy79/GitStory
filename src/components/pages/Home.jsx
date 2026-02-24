@@ -50,20 +50,9 @@ const Home = () => {
           </div>
         </form>
 
-        {/* Free trial CTA */}
-        <div className="text-center mt-6">
-          <p className="text-gray-500 text-sm mb-2">Want the full experience?</p>
-          <button
-            onClick={() => navigate("/onboarding/1")}
-            className="px-8 py-3 bg-[#bfa174] text-[#0A1828] font-bold rounded-lg hover:bg-[#d4b68a] transition-colors text-lg"
-          >
-            Start Your Free Trial
-          </button>
-          <p className="text-gray-600 text-xs mt-2">14 days free. No credit card required.</p>
-        </div>
 
         {/* Feature cards */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-[#1a2d3d] p-6 rounded-lg border border-gray-700">
             <h3 className="text-lg font-semibold text-[#bfa174] mb-2">Medical History</h3>
             <p className="text-gray-400">Review your commit timeline with clear, readable case notes</p>
@@ -78,6 +67,17 @@ const Home = () => {
           </div>
         </div>
 
+        {/* Free trial CTA */}
+        <div className="text-center mt-20">
+          <p className="text-gray-500 text-sm mb-2">Want the full experience?</p>
+          <button
+            onClick={() => navigate("/onboarding/1")}
+            className="px-8 py-3 bg-[#bfa174] text-[#0A1828] font-bold rounded-lg hover:bg-[#d4b68a] transition-colors text-lg"
+          >
+            Start Your Free Trial
+          </button>
+          <p className="text-gray-600 text-xs mt-2">14 days free. No credit card required.</p>
+        </div>
         {/* AI / Vibe coding section */}
         <div className="mt-20">
           <div className="text-center mb-10">

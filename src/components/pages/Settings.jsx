@@ -1,19 +1,53 @@
 import { useState } from "react";
+import { deleteUser } from "firebase/auth";
 import { useAuth } from "../../context/AuthContext";
+import { auth } from "../../services/firebase";
+
+const SETTINGS_KEY = "sustainrx_settings";
+
+const loadSettings = () => {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return { emailNotifs: true, trialReminder: true, weeklyDigest: false, darkMode: true };
+};
 
 const Settings = () => {
-  const { user } = useAuth();
-  const [saved, setSaved] = useState(false);
+  const { logout } = useAuth();
 
-  // Facade toggles — not wired to anything
-  const [emailNotifs, setEmailNotifs] = useState(true);
-  const [trialReminder, setTrialReminder] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [saved, setSaved] = useState(false);
+  const [emailNotifs, setEmailNotifs] = useState(() => loadSettings().emailNotifs);
+  const [trialReminder, setTrialReminder] = useState(() => loadSettings().trialReminder);
+  const [weeklyDigest, setWeeklyDigest] = useState(() => loadSettings().weeklyDigest);
+  const [darkMode, setDarkMode] = useState(() => loadSettings().darkMode);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleSave = () => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ emailNotifs, trialReminder, weeklyDigest, darkMode }));
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteUser(auth.currentUser);
+      await logout();
+    } catch (err) {
+      if (err.code === "auth/requires-recent-login") {
+        setDeleteError("For security, please sign out and sign back in before deleting your account.");
+      } else {
+        setDeleteError("Failed to delete account. Please try again.");
+      }
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const Toggle = ({ enabled, onChange, label, description }) => (
@@ -100,12 +134,20 @@ const Settings = () => {
         {/* Danger Zone */}
         <div className="bg-[#1a2d3d] rounded-lg border border-red-900/50 p-8 mb-6">
           <h3 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
+          {deleteError && (
+            <p className="text-red-400 text-sm mb-4 bg-red-900/20 border border-red-900/50 rounded-lg px-4 py-3">
+              {deleteError}
+            </p>
+          )}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white font-medium text-sm">Delete Account</p>
               <p className="text-gray-500 text-xs">Permanently delete your account and all data</p>
             </div>
-            <button className="px-4 py-2 text-sm border border-red-500 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-semibold">
+            <button
+              onClick={() => { setDeleteError(null); setShowDeleteConfirm(true); }}
+              className="px-4 py-2 text-sm border border-red-500 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-semibold"
+            >
               Delete Account
             </button>
           </div>
@@ -121,6 +163,35 @@ const Settings = () => {
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+          <div className="bg-[#1a2d3d] border border-red-900/50 rounded-xl p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-red-400 mb-2">Delete Account</h3>
+            <p className="text-gray-300 mb-2">
+              This will permanently delete your account and all associated data.
+            </p>
+            <p className="text-gray-500 text-sm mb-6">This action cannot be undone.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+                className="px-5 py-2 text-sm border border-gray-600 text-gray-300 rounded-lg hover:border-gray-400 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="px-5 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors font-semibold disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, Delete My Account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
