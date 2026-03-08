@@ -4,6 +4,8 @@ import { chatWithClaude } from "../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { parseGitHubUrl, getRepoInfo, getCommits, getRepoTree, getFileContent, getCommitsWithDetails } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -611,7 +613,36 @@ const Chat = () => {
                         : "bg-[#0A1828] text-gray-200 border border-gray-700"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                    {msg.role === "user" ? (
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                    ) : (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h1: ({ children }) => <h1 className="text-lg font-bold text-white mb-2 mt-3 first:mt-0">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-base font-bold text-white mb-2 mt-3 first:mt-0">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-sm font-bold text-gray-200 mb-1 mt-2 first:mt-0">{children}</h3>,
+                          p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-0.5">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-0.5">{children}</ol>,
+                          li: ({ children }) => <li className="text-gray-200">{children}</li>,
+                          code: ({ inline, children }) => inline
+                            ? <code className="bg-[#1a2d3d] text-[#178582] px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                            : <code className="block bg-[#1a2d3d] text-gray-300 p-3 rounded-lg text-xs font-mono overflow-x-auto mb-2 whitespace-pre">{children}</code>,
+                          pre: ({ children }) => <>{children}</>,
+                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                          em: ({ children }) => <em className="italic text-gray-300">{children}</em>,
+                          blockquote: ({ children }) => <blockquote className="border-l-2 border-[#178582] pl-3 italic text-gray-400 mb-2">{children}</blockquote>,
+                          hr: () => <hr className="border-gray-700 my-3" />,
+                          a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#178582] underline hover:text-[#1a9d9a]">{children}</a>,
+                          table: ({ children }) => <div className="overflow-x-auto mb-2"><table className="text-xs border-collapse w-full">{children}</table></div>,
+                          th: ({ children }) => <th className="border border-gray-600 px-2 py-1 text-left text-gray-300 font-semibold bg-[#1a2d3d]">{children}</th>,
+                          td: ({ children }) => <td className="border border-gray-700 px-2 py-1 text-gray-400">{children}</td>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    )}
                   </div>
                 </div>
               ))}

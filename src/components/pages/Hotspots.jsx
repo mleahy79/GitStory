@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { parseGitHubUrl, getCommitsWithDetails, getIssues } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Hotspots = () => {
   const { repoUrl, setSearchParams } = useLastRepo();
@@ -154,16 +155,7 @@ const Hotspots = () => {
     );
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#0A1828] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#178582] mx-auto mb-4"></div>
-          <p className="text-gray-400">Scanning for hotspots...</p>
-        </div>
-      </main>
-    );
-  }
+  if (loading) return <LoadingSpinner message="Scanning for hotspots..." />;
 
   if (error) {
     return (
@@ -179,6 +171,18 @@ const Hotspots = () => {
   }
 
   const maxCommits = fileHotspots.length > 0 ? fileHotspots[0].commitCount : 1;
+
+  const churnSummary = fileHotspots.reduce(
+    (acc, f) => {
+      const ratio = f.commitCount / maxCommits;
+      if (ratio > 0.7) acc.critical++;
+      else if (ratio > 0.4) acc.high++;
+      else if (ratio > 0.2) acc.moderate++;
+      else acc.stable++;
+      return acc;
+    },
+    { critical: 0, high: 0, moderate: 0, stable: 0 }
+  );
 
   return (
     <main className="min-h-screen bg-[#0A1828]">
@@ -196,10 +200,26 @@ const Hotspots = () => {
               New Scan
             </button>
           </div>
-          <p className="text-gray-400">
+          <p className="text-gray-400 mb-4">
             High-churn files and stale issues from the last 50 commits.
             Files touched frequently may indicate areas of instability or tech debt.
           </p>
+          {fileHotspots.length > 0 && (
+            <div className="flex flex-wrap gap-3 text-sm font-medium">
+              <span className="px-3 py-1 rounded-full bg-red-900/40 text-red-400">
+                {churnSummary.critical} critical
+              </span>
+              <span className="px-3 py-1 rounded-full bg-orange-900/40 text-orange-400">
+                {churnSummary.high} high
+              </span>
+              <span className="px-3 py-1 rounded-full bg-yellow-900/40 text-yellow-400">
+                {churnSummary.moderate} moderate
+              </span>
+              <span className="px-3 py-1 rounded-full bg-green-900/40 text-green-400">
+                {churnSummary.stable} stable
+              </span>
+            </div>
+          )}
         </div>
 
         {/* File Hotspots */}

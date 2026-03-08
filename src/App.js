@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-route
 import './App.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { OnboardingProvider } from './context/OnboardingContext';
+import { ToastProvider } from './context/ToastContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -73,7 +74,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <OnboardingProvider>
-          <AppLayout />
+          <ToastProvider>
+            <AppLayout />
+          </ToastProvider>
         </OnboardingProvider>
       </AuthProvider>
     </BrowserRouter>

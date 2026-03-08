@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signOut, GithubAuthProvider } from "firebase/auth";
 import { auth, githubProvider } from "../services/firebase";
 
 const AuthContext = createContext();
@@ -29,10 +29,10 @@ export const AuthProvider = ({ children }) => {
   const signInWithGitHub = async () => {
     try {
       const result = await signInWithPopup(auth, githubProvider);
-      const credential = result._tokenResponse;
-      if (credential?.oauthAccessToken) {
-        setGithubToken(credential.oauthAccessToken);
-        localStorage.setItem("githubToken", credential.oauthAccessToken);
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      if (credential?.accessToken) {
+        setGithubToken(credential.accessToken);
+        localStorage.setItem("githubToken", credential.accessToken);
       }
       return { success: true, user: result.user };
     } catch (error) {

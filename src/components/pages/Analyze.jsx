@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Analyze = () => {
   const { repoUrl, setSearchParams } = useLastRepo();
@@ -50,16 +51,52 @@ const Analyze = () => {
     fetchData();
   }, [repoUrl]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#0A1828] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#178582] mx-auto mb-4"></div>
-          <p className="text-gray-400">Running diagnostic scans...</p>
-        </div>
-      </main>
-    );
-  }
+  // --- Derived signals ---
+
+  const busFactor = (() => {
+    if (contributors.length === 0) return null;
+    const total = contributors.reduce((sum, c) => sum + c.contributions, 0);
+    let cumulative = 0;
+    let count = 0;
+    for (const c of contributors) {
+      cumulative += c.contributions;
+      count++;
+      if (cumulative / total >= 0.8) break;
+    }
+    const topPct = Math.round((contributors[0].contributions / total) * 100);
+    return { count, topPct };
+  })();
+
+  const commitVelocity = (() => {
+    if (commits.length < 2) return null;
+    const newest = new Date(commits[0].commit.author?.date);
+    const oldest = new Date(commits[commits.length - 1].commit.author?.date);
+    const weeks = Math.max(1, (newest - oldest) / (1000 * 60 * 60 * 24 * 7));
+    return (commits.length / weeks).toFixed(1);
+  })();
+
+  const issueSignals = (() => {
+    if (issues.length === 0) return null;
+    const onlyIssues = issues.filter((i) => !i.pull_request);
+    const open = onlyIssues.filter((i) => i.state === "open");
+    const openRate = onlyIssues.length > 0
+      ? Math.round((open.length / onlyIssues.length) * 100)
+      : null;
+    const avgAgeDays = open.length > 0
+      ? Math.round(open.reduce((sum, i) => sum + (Date.now() - new Date(i.created_at)) / (1000 * 60 * 60 * 24), 0) / open.length)
+      : null;
+    return { openRate, avgAgeDays, openCount: open.length, total: onlyIssues.length };
+  })();
+
+  // --- Render helpers ---
+
+  const busFactorColor = (n) => {
+    if (n <= 1) return "text-red-400";
+    if (n <= 2) return "text-orange-400";
+    return "text-green-400";
+  };
+
+  if (loading) return <LoadingSpinner message="Analyzing repository..." />;
 
   const handleRepoSubmit = (e) => {
     e.preventDefault();
@@ -74,10 +111,10 @@ const Analyze = () => {
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-[#178582] mb-4">
-              Repository <span className="text-[#bfa174]">Checkup</span>
+              Repository <span className="text-[#bfa174]">Analysis</span>
             </h2>
             <p className="text-xl text-gray-400">
-              Enter a GitHub repository URL to run a full diagnostic scan.
+              Enter a GitHub repository URL to run a full analysis.
             </p>
           </div>
           <form onSubmit={handleRepoSubmit} className="max-w-2xl mx-auto">
@@ -97,7 +134,7 @@ const Analyze = () => {
                 disabled={!repoInput.trim()}
                 className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
               >
-                Start Checkup
+                Analyze
               </button>
             </div>
           </form>
@@ -111,7 +148,7 @@ const Analyze = () => {
       <main className="min-h-screen bg-[#0A1828]">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="bg-red-900/30 border border-red-500 rounded-lg p-6">
-            <h2 className="text-red-400 font-semibold mb-2">Diagnosis Failed</h2>
+            <h2 className="text-red-400 font-semibold mb-2">Analysis Failed</h2>
             <p className="text-red-300">{error}</p>
           </div>
         </div>
@@ -122,26 +159,29 @@ const Analyze = () => {
   return (
     <main className="min-h-screen bg-[#0A1828]">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Patient Chart Header */}
+        {/* Repo Header */}
         {repoInfo && (
           <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6 mb-6">
             <div className="flex justify-between items-start mb-2">
               <h2 className="text-2xl font-bold text-[#bfa174]">
-                Patient: {repoInfo.full_name}
+                {repoInfo.full_name}
               </h2>
               <button
                 onClick={() => setSearchParams({})}
                 className="px-4 py-1.5 text-sm border border-gray-500 text-gray-400 rounded-lg hover:border-white hover:text-white transition-colors whitespace-nowrap"
               >
-                New Checkup
+                New Analysis
               </button>
             </div>
             <p className="text-gray-400 mb-4">{repoInfo.description}</p>
             <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-              <span>Popularity: {repoInfo.stargazers_count} stars</span>
-              <span>Forks: {repoInfo.forks_count}</span>
-              <span>Open Issues: {repoInfo.open_issues_count}</span>
-              <span>Records Loaded: {commits.length}+ commits</span>
+              <span>{repoInfo.stargazers_count.toLocaleString()} stars</span>
+              <span>{repoInfo.forks_count.toLocaleString()} forks</span>
+              <span>{repoInfo.open_issues_count} open issues</span>
+              <span>{commits.length} commits loaded</span>
+              {commitVelocity && (
+                <span className="text-[#178582] font-medium">{commitVelocity} commits/week</span>
+              )}
             </div>
           </div>
         )}
@@ -150,9 +190,26 @@ const Analyze = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Contributors */}
           <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-[#bfa174] mb-4">
-              Care Team ({contributors.length} Contributors)
+            <h3 className="text-lg font-semibold text-[#bfa174] mb-1">
+              Contributors ({contributors.length})
             </h3>
+            {busFactor && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mb-4">
+                <span>
+                  Bus factor:{" "}
+                  <span className={`font-semibold ${busFactorColor(busFactor.count)}`}>
+                    {busFactor.count}
+                  </span>
+                  <span className="text-gray-500 ml-1">
+                    ({busFactor.count} person{busFactor.count !== 1 ? "s" : ""} own 80% of commits)
+                  </span>
+                </span>
+                <span>
+                  Top contributor:{" "}
+                  <span className="text-gray-300">{busFactor.topPct}% of commits</span>
+                </span>
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
               {contributors.map((contributor) => (
                 <a
@@ -179,7 +236,7 @@ const Analyze = () => {
           {/* Languages */}
           <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-[#bfa174] mb-4">
-              Lab Results (Languages)
+              Language Breakdown
             </h3>
             <div className="space-y-3">
               {(() => {
@@ -209,13 +266,36 @@ const Analyze = () => {
           </div>
         </div>
 
-        {/* Issues */}
+        {/* Issues & PRs */}
         <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-[#bfa174] mb-4">
-            Active Symptoms (Issues & PRs)
+          <h3 className="text-lg font-semibold text-[#bfa174] mb-1">
+            Issues & PRs
           </h3>
+          {issueSignals && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mb-4">
+              {issueSignals.openRate !== null && (
+                <span>
+                  Open rate:{" "}
+                  <span className={`font-semibold ${issueSignals.openRate > 60 ? "text-orange-400" : "text-green-400"}`}>
+                    {issueSignals.openRate}%
+                  </span>
+                  <span className="text-gray-500 ml-1">
+                    ({issueSignals.openCount} of {issueSignals.total} issues open)
+                  </span>
+                </span>
+              )}
+              {issueSignals.avgAgeDays !== null && (
+                <span>
+                  Avg age of open issues:{" "}
+                  <span className={`font-semibold ${issueSignals.avgAgeDays > 30 ? "text-orange-400" : "text-gray-300"}`}>
+                    {issueSignals.avgAgeDays}d
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
           {issues.length === 0 ? (
-            <p className="text-gray-500">No issues found - clean bill of health!</p>
+            <p className="text-gray-500">No issues found.</p>
           ) : (
             <div className="space-y-3">
               {issues.slice(0, 10).map((issue) => (
@@ -252,11 +332,24 @@ const Analyze = () => {
           )}
         </div>
 
-        {/* Medical History */}
+        {/* Commit History */}
         <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-[#bfa174] mb-4">
-            Medical History (Recent Activity)
+          <h3 className="text-lg font-semibold text-[#bfa174] mb-1">
+            Commit History
           </h3>
+          {commitVelocity && (
+            <p className="text-xs text-gray-400 mb-4">
+              {commits.length} commits spanning{" "}
+              {(() => {
+                const newest = new Date(commits[0].commit.author?.date);
+                const oldest = new Date(commits[commits.length - 1].commit.author?.date);
+                const days = Math.round((newest - oldest) / (1000 * 60 * 60 * 24));
+                return `${days} days`;
+              })()}
+              {" "}—{" "}
+              <span className="text-[#178582] font-medium">{commitVelocity} commits/week</span>
+            </p>
+          )}
           <div className="space-y-4">
             {commits.map((commit) => (
               <div
@@ -267,12 +360,12 @@ const Analyze = () => {
                   {commit.commit.message.split("\n")[0]}
                 </p>
                 <div className="flex gap-4 mt-1 text-sm text-gray-500">
-                  <span>Dr. {commit.commit.author?.name || "Unknown"}</span>
+                  <span>{commit.commit.author?.name || "Unknown"}</span>
                   <span>
                     {new Date(commit.commit.author?.date).toLocaleDateString()}
                   </span>
                   <span className="font-mono text-xs text-[#178582]">
-                    #{commit.sha.substring(0, 7)}
+                    {commit.sha.substring(0, 7)}
                   </span>
                 </div>
               </div>
