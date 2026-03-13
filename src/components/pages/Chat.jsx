@@ -4,6 +4,7 @@ import { chatWithClaude } from "../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { parseGitHubUrl, getRepoInfo, getCommits, getRepoTree, getFileContent, getCommitsWithDetails } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import { useToast } from "../../context/ToastContext";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -11,6 +12,7 @@ const Chat = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { repoUrl } = useLastRepo();
+  const { showToast } = useToast();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -75,8 +77,11 @@ const Chat = () => {
       setSelectedFiles([]);
       setLoadedFileContents({});
       setFileTree([]);
+      showToast("Repository loaded successfully.", "success");
     } catch (err) {
-      setError("Failed to load repository. Check the URL and try again.");
+      const msg = "Failed to load repository. Check the URL and try again.";
+      setError(msg);
+      showToast(msg, "error");
     } finally {
       setLoadingRepo(false);
     }
@@ -90,7 +95,9 @@ const Chat = () => {
       setDetailedCommits(commits);
       setShowCommitBrowser(true);
     } catch (err) {
-      setError("Failed to load commit details.");
+      const msg = "Failed to load commit details.";
+      setError(msg);
+      showToast(msg, "error");
     } finally {
       setLoadingCommits(false);
     }
@@ -101,7 +108,7 @@ const Chat = () => {
       setSelectedCommits(prev => prev.filter(s => s !== sha));
     } else {
       if (selectedCommits.length >= 5) {
-        setError("Maximum 5 commits can be selected at once.");
+        showToast("Maximum 5 commits can be selected at once.", "error");
         return;
       }
       setSelectedCommits(prev => [...prev, sha]);
@@ -183,7 +190,9 @@ const Chat = () => {
         [path]: content.decodedContent,
       }));
     } catch (err) {
-      setError(`Failed to load ${path}`);
+      const msg = `Failed to load file.`;
+      setError(msg);
+      showToast(msg, "error");
     }
   };
 
@@ -192,7 +201,7 @@ const Chat = () => {
       setSelectedFiles(prev => prev.filter(f => f !== path));
     } else {
       if (selectedFiles.length >= 5) {
-        setError("Maximum 5 files can be selected at once to stay within context limits.");
+        showToast("Maximum 5 files can be selected at once to stay within context limits.", "error");
         return;
       }
       setSelectedFiles(prev => [...prev, path]);

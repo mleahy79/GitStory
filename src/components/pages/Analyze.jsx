@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import { useToast } from "../../context/ToastContext";
 import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Analyze = () => {
   const { repoUrl, setSearchParams } = useLastRepo();
+  const { showToast } = useToast();
   const [repoInput, setRepoInput] = useState("");
 
   const [repoInfo, setRepoInfo] = useState(null);
@@ -41,8 +43,10 @@ const Analyze = () => {
         setIssues(issuesData);
         const prev = parseInt(localStorage.getItem("sustainrx_stats_scans") || "0", 10);
         localStorage.setItem("sustainrx_stats_scans", prev + 1);
+        showToast("Repository analyzed successfully.", "success");
       } catch (err) {
         setError(err.message);
+        showToast(`Error: ${err.message}`, "error");
       } finally {
         setLoading(false);
       }

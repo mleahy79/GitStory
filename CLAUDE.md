@@ -16,8 +16,8 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 
 ## MEDIUM PRIORITY (polish that makes it feel real)
 
-- [ ] 7. Add toast/notification system for user actions (save, errors, success messages)
-- [ ] 8. Add consistent loading states across all pages
+- [x] 7. Add toast/notification system for user actions (save, errors, success messages)
+- [x] 8. Add consistent loading states across all pages
 - [ ] 9. Handle GitHub API rate limits gracefully (show message, suggest auth)
 - [ ] 10. Add basic feature gating between free/pro/team (even if mocked)
 - [ ] 11. Make trial logic dynamic - track trial start date, calculate remaining days
@@ -31,14 +31,21 @@ SustainRx is a GitHub repo health analytics app (medical metaphor). Goal: make i
 - [ ] 16. Responsive design QA across mobile/tablet/desktop
 - [ ] 17. Add a proper favicon and meta tags (OG image, description)
 
+## DEFERRED / LOW PRIORITY (reassess after MVP validation)
+
+- [ ] **GitLab Support** — Add GitLab API integration (20% market). Decision: Stay GitHub-only for launch. Revisit in Month 3 if user demand exists. Design service layer to support multi-platform later without rewriting core logic.
+- [ ] **Bitbucket Support** — Only if GitLab proves popular (10% market, harder API)
+- [ ] **Self-Hosted Support** — Very low ROI due to support burden (7% market)
+
 ---
 
 ## Session Notes
-- Last updated: 2026-02-24
-- Current status: Items 1-6 done. Next up: #7 (toast system) and #8 (loading states)
+- Last updated: 2026-03-13
+- Current status: Items 1-8 done. Next up: #9 (GitHub API rate limits)
 - Note: When resuming, check items off as completed and add session notes below
 
 ### Session Log
 - 2026-02-14: Initial audit complete. Checklist created. No items started yet.
 - 2026-02-14: Completed #1 (404 route), #2 (ErrorBoundary), #3 (ProtectedRoute guard), #6 (all pages in router). Build passes.
 - 2026-02-24: Completed #4 (Settings - localStorage persist, delete account confirmation modal with Firebase deleteUser). Completed #5 (Profile - dynamic trial days from creationTime, real usage stats from localStorage counters tracked in Analyze/Chat/Hotspots).
+- 2026-03-13: Completed #7 (Toast system wired into Analyze, Chat, Hotspots, Document pages). Completed #8 (Consistent LoadingSpinner across all analysis pages + disabled button states). Viability research: GitHub-only strategy recommended for MVP. GitLab/multi-platform deferred to post-launch (reassess after user validation).

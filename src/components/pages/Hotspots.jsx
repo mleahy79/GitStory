@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { parseGitHubUrl, getCommitsWithDetails, getIssues } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import { useToast } from "../../context/ToastContext";
 import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Hotspots = () => {
   const { repoUrl, setSearchParams } = useLastRepo();
+  const { showToast } = useToast();
   const [repoInput, setRepoInput] = useState("");
 
   const [fileHotspots, setFileHotspots] = useState([]);
@@ -77,8 +79,10 @@ const Hotspots = () => {
           .slice(0, 15);
 
         setStaleIssues(stale);
+        showToast("Hotspot analysis complete.", "success");
       } catch (err) {
         setError(err.message);
+        showToast(`Error: ${err.message}`, "error");
       } finally {
         setLoading(false);
       }

@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
 import { useLastRepo } from "../../hooks/useLastRepo";
+import { useToast } from "../../context/ToastContext";
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Document = () => {
   const { repoUrl, setSearchParams } = useLastRepo();
+  const { showToast } = useToast();
   const [repoInput, setRepoInput] = useState("");
 
   const [repoInfo, setRepoInfo] = useState(null);
@@ -39,6 +42,7 @@ const Document = () => {
         setIssues(issuesData);
       } catch (err) {
         setError(err.message);
+        showToast(`Error: ${err.message}`, "error");
       } finally {
         setLoading(false);
       }
@@ -48,11 +52,13 @@ const Document = () => {
   }, [repoUrl]);
 
   const handlePrint = () => {
+    showToast("Opening print preview...", "info");
     window.print();
   };
 
   const handleDownloadPDF = () => {
     // Uses the browser's print dialog with "Save as PDF" as the destination
+    showToast("Select 'Save as PDF' in the print dialog.", "info");
     window.print();
   };
 
@@ -102,13 +108,7 @@ const Document = () => {
   }
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-white p-8">
-        <div className="max-w-4xl mx-auto text-center py-16">
-          <p className="text-gray-600">Loading repository data...</p>
-        </div>
-      </main>
-    );
+    return <LoadingSpinner message="Generating report..." />;
   }
 
   if (error) {
