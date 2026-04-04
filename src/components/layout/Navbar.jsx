@@ -22,6 +22,7 @@ const Navbar = () => {
 
   const navLinks = [
     { to: "/", label: "Checkup" },
+    { to: "/branches", label: "Branches" },
     { to: "/hotspots", label: "Hotspots" },
     { to: "/chat", label: "Code Diagnostic" },
     { to: "/document", label: "Document" },

@@ -12,6 +12,7 @@ import Login from './components/pages/Login';
 import Chat from './components/pages/Chat';
 import Document from './components/pages/Document';
 import Hotspots from './components/pages/Hotspots';
+import Branches from './components/pages/Branches';
 import Profile from './components/pages/Profile';
 import Settings from './components/pages/Settings';
 import Pricing from './components/pages/Pricing';
@@ -52,6 +53,7 @@ function AppLayout() {
           <Route path="/login" element={<Login />} />
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/hotspots" element={<Hotspots />} />
+          <Route path="/branches" element={<Branches />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

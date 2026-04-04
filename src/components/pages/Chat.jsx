@@ -358,7 +358,7 @@ const Chat = () => {
 
   return (
     <main className="min-h-screen bg-[#0A1828]">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-[#178582] mb-4">
             AI <span className="text-[#bfa174]">Assistant</span>
@@ -596,7 +596,7 @@ const Chat = () => {
         )}
 
         {/* Chat Messages */}
-        <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6 mb-6 min-h-[300px] max-h-[500px] overflow-y-auto">
+        <div className="bg-[#1a2d3d] rounded-t-lg border border-gray-700 border-b-0 p-6 min-h-[400px] h-[65vh] overflow-y-auto">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 py-12">
               <p>Start a conversation with the AI assistant.</p>
@@ -676,9 +676,9 @@ const Chat = () => {
           </div>
         )}
 
-        {/* Input Form */}
-        <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
-          <form onSubmit={handleSubmit}>
+        {/* Input Form - Connected to message box as one unit */}
+        <form onSubmit={handleSubmit} className="bg-[#1a2d3d] rounded-b-lg border border-gray-700 border-t-0 p-6">
+          <div className="flex items-stretch gap-3 mb-4">
             <textarea
               id="chat-message"
               name="chat-message"
@@ -690,9 +690,9 @@ const Chat = () => {
                   ? `Ask about the selected files...`
                   : `Ask about ${repoContext.name}...`
                 : "Ask me anything about code health..."}
-              rows={3}
+              rows={2}
               disabled={loading}
-              className="w-full px-4 py-3 bg-[#0A1828] border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-[#178582] focus:border-transparent outline-none resize-none disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-[#0A1828] border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-[#178582] focus:border-transparent outline-none resize-none disabled:opacity-50"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -700,29 +700,29 @@ const Chat = () => {
                 }
               }}
             />
-            <div className="mt-4 flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <p className="text-gray-500 text-sm">Press Enter to send</p>
-                {messages.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={handlePrintConversation}
-                    className="text-[#bfa174] text-sm hover:underline"
-                  >
-                    Print Conversation
-                  </button>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={loading || !message.trim()}
-                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Sending..." : "Send"}
-              </button>
+            <button
+              type="submit"
+              disabled={loading || !message.trim()}
+              className="px-6 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+            >
+              {loading ? "Sending..." : "Send"}
+            </button>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <p className="text-gray-500 text-xs">Shift + Enter for new line</p>
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handlePrintConversation}
+                  className="text-[#bfa174] text-sm hover:underline"
+                >
+                  Print Conversation
+                </button>
+              )}
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </main>
   );

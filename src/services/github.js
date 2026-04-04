@@ -199,3 +199,44 @@ export async function getFileContent(owner, repo, path) {
   }
   return data;
 }
+
+// Fetch all branches with commit info
+export async function getBranches(owner, repo, perPage = 100) {
+  const response = await fetch(
+    `${BASE_URL}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
+    { headers: getHeaders() }
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch branches: ${response.status}`);
+  }
+  return response.json();
+}
+
+// Compare two branches (get commits and file changes between them)
+export async function compareBranches(owner, repo, base, head) {
+  const response = await fetch(
+    `${BASE_URL}/repos/${owner}/${repo}/compare/${base}...${head}`,
+    { headers: getHeaders() }
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to compare branches: ${response.status}`);
+  }
+  return response.json();
+}
+
+// Get commits on a specific branch (not on main/base)
+export async function getCommitsOnBranch(owner, repo, branch, baseBranch = "main", perPage = 30) {
+  try {
+    const compare = await compareBranches(owner, repo, baseBranch, branch);
+    return compare.commits || [];
+  } catch {
+    // Fallback: try with master instead of main
+    try {
+      const compare = await compareBranches(owner, repo, "master", branch);
+      return compare.commits || [];
+    } catch {
+      // If both fail, return regular commits for this branch
+      return getCommits(owner, repo, 1, perPage);
+    }
+  }
+}
