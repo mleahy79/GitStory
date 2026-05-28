@@ -1,10 +1,6 @@
 const {onCall, HttpsError} = require("firebase-functions/v2/https");
-const {defineSecret} = require("firebase-functions/params");
 const {setGlobalOptions} = require("firebase-functions/v2");
 const Anthropic = require("@anthropic-ai/sdk");
-
-// Define the secret
-const claudeApiKey = defineSecret("CLAUDE_API_KEY");
 
 // Set global options for cost control
 setGlobalOptions({maxInstances: 10});
@@ -13,7 +9,7 @@ setGlobalOptions({maxInstances: 10});
  * Claude chat function for SustainRx AI assistant
  */
 exports.chat = onCall(
-    {secrets: [claudeApiKey], cors: true},
+    {cors: true},
     async (request) => {
       // Check if user is authenticated
       if (!request.auth) {
@@ -31,7 +27,7 @@ exports.chat = onCall(
 
       try {
         const client = new Anthropic({
-          apiKey: claudeApiKey.value(),
+          apiKey: process.env.CLAUDE_API_KEY,
         });
 
         // Build system prompt with repo context if provided
@@ -79,7 +75,7 @@ exports.chat = onCall(
         }
 
         const response = await client.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 2048,
           system: systemPrompt,
           messages: [{role: "user", content: message}],

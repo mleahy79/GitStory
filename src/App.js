@@ -3,6 +3,7 @@ import './App.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { OnboardingProvider } from './context/OnboardingContext';
 import { ToastProvider } from './context/ToastContext';
+import { RepoProvider } from './context/RepoContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -77,7 +78,9 @@ function App() {
       <AuthProvider>
         <OnboardingProvider>
           <ToastProvider>
-            <AppLayout />
+            <RepoProvider>
+              <AppLayout />
+            </RepoProvider>
           </ToastProvider>
         </OnboardingProvider>
       </AuthProvider>

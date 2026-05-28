@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRepo } from "../../context/RepoContext";
 
 const Home = () => {
-  const [repoUrl, setRepoUrl] = useState(
-    () => localStorage.getItem("sustainrx_lastRepo") || ""
-  );
+  const { activeRepo, setActiveRepo } = useRepo();
+  const [repoUrl, setRepoUrl] = useState(() => activeRepo || "");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (repoUrl.trim()) {
-      navigate(`/analyze?repo=${encodeURIComponent(repoUrl)}`);
+    const url = repoUrl.trim();
+    if (url) {
+      setActiveRepo(url);
+      navigate("/analyze");
     }
   };
 

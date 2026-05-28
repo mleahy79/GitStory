@@ -1,59 +1,16 @@
 import { useState, useEffect } from "react";
-import { parseGitHubUrl, getRepoInfo, getCommits, getContributors, getLanguages, getIssues } from "../../services/github";
-import { useLastRepo } from "../../hooks/useLastRepo";
+import { useRepo } from "../../context/RepoContext";
 import { useToast } from "../../context/ToastContext";
 import LoadingSpinner from "../shared/LoadingSpinner";
 
 const Analyze = () => {
-  const { repoUrl, setSearchParams } = useLastRepo();
+  const { activeRepo, setActiveRepo, repoInfo, commits, contributors, languages, issues, loading, error } = useRepo();
   const { showToast } = useToast();
   const [repoInput, setRepoInput] = useState("");
 
-  const [repoInfo, setRepoInfo] = useState(null);
-  const [commits, setCommits] = useState([]);
-  const [contributors, setContributors] = useState([]);
-  const [languages, setLanguages] = useState({});
-  const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   useEffect(() => {
-    async function fetchData() {
-      if (!repoUrl) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { owner, repo } = parseGitHubUrl(repoUrl);
-
-        // Fetch all data in parallel
-        const [repoData, commitsData, contributorsData, languagesData, issuesData] = await Promise.all([
-          getRepoInfo(owner, repo),
-          getCommits(owner, repo, 1, 50),
-          getContributors(owner, repo, 10),
-          getLanguages(owner, repo),
-          getIssues(owner, repo, "all", 20),
-        ]);
-
-        setRepoInfo(repoData);
-        setCommits(commitsData);
-        setContributors(contributorsData);
-        setLanguages(languagesData);
-        setIssues(issuesData);
-        const prev = parseInt(localStorage.getItem("sustainrx_stats_scans") || "0", 10);
-        localStorage.setItem("sustainrx_stats_scans", prev + 1);
-        showToast("Repository analyzed successfully.", "success");
-      } catch (err) {
-        setError(err.message);
-        showToast(`Error: ${err.message}`, "error");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [repoUrl]);
+    if (activeRepo && !repoInput) setRepoInput(activeRepo);
+  }, [activeRepo, repoInput]);
 
   // --- Derived signals ---
 
@@ -92,24 +49,26 @@ const Analyze = () => {
     return { openRate, avgAgeDays, openCount: open.length, total: onlyIssues.length };
   })();
 
-  // --- Render helpers ---
-
   const busFactorColor = (n) => {
     if (n <= 1) return "text-red-400";
     if (n <= 2) return "text-orange-400";
     return "text-green-400";
   };
 
-  if (loading) return <LoadingSpinner message="Analyzing repository..." />;
-
   const handleRepoSubmit = (e) => {
     e.preventDefault();
-    if (repoInput.trim()) {
-      setSearchParams({ repo: repoInput.trim() });
+    const url = repoInput.trim();
+    if (url) {
+      const prev = parseInt(localStorage.getItem("sustainrx_stats_scans") || "0", 10);
+      localStorage.setItem("sustainrx_stats_scans", prev + 1);
+      setActiveRepo(url);
+      showToast("Analyzing repository...", "info");
     }
   };
 
-  if (!repoUrl) {
+  if (loading) return <LoadingSpinner message="Analyzing repository..." />;
+
+  if (!activeRepo) {
     return (
       <main className="min-h-screen bg-[#0A1828]">
         <div className="max-w-4xl mx-auto px-4 py-16">
@@ -171,7 +130,7 @@ const Analyze = () => {
                 {repoInfo.full_name}
               </h2>
               <button
-                onClick={() => setSearchParams({})}
+                onClick={() => setActiveRepo(null)}
                 className="px-4 py-1.5 text-sm border border-gray-500 text-gray-400 rounded-lg hover:border-white hover:text-white transition-colors whitespace-nowrap"
               >
                 New Analysis
