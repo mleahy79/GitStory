@@ -89,6 +89,7 @@ const Hotspots = () => {
     }
 
     fetchHotspots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrl]);
 
   const handleRepoSubmit = (e) => {

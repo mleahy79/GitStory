@@ -49,6 +49,7 @@ const Document = () => {
     }
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrl]);
 
   const handlePrint = () => {

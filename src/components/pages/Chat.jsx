@@ -42,6 +42,7 @@ const Chat = () => {
     if (repoUrl) {
       loadRepoContext(repoUrl);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrl]);
 
   const loadRepoContext = async (url) => {
