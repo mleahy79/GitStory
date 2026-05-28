@@ -19,6 +19,7 @@ import Settings from './components/pages/Settings';
 import Pricing from './components/pages/Pricing';
 import Privacy from './components/pages/Privacy';
 import Terms from './components/pages/Terms';
+import About from './components/pages/About';
 import NotFound from './components/pages/NotFound';
 import OnboardingPage from './components/pages/onboarding/OnboardingPage';
 import TrialPage from './components/pages/trial/TrialPage';
@@ -55,6 +56,7 @@ function AppLayout() {
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/hotspots" element={<Hotspots />} />
           <Route path="/branches" element={<Branches />} />
+          <Route path="/about" element={<About />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

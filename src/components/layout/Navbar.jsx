@@ -26,6 +26,7 @@ const Navbar = () => {
     { to: "/hotspots", label: "Hotspots" },
     { to: "/chat", label: "Code Diagnostic" },
     { to: "/document", label: "Document" },
+    { to: "/about", label: "About" },
   ];
 
   return (
