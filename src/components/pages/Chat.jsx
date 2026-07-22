@@ -249,8 +249,15 @@ const Chat = () => {
       localStorage.setItem("sustainrx_stats_queries", prev + 1);
     } catch (err) {
       console.error("Chat error:", err);
-      setError("Failed to get response. Please try again.");
       setMessages(prev => prev.slice(0, -1));
+      if (err.code === "functions/unauthenticated") {
+        showToast("Session expired. Please sign in again.", "error");
+        navigate("/login");
+      } else {
+        const msg = "Failed to get response. Please try again.";
+        setError(msg);
+        showToast(msg, "error");
+      }
     } finally {
       setLoading(false);
     }

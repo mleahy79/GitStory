@@ -24,6 +24,16 @@ githubProvider.addScope("repo");
 // Claude chat function
 export const chatWithClaude = async (message, repoContext = null) => {
   const chatFunction = httpsCallable(functions, "chat");
-  const result = await chatFunction({ message, repoContext });
-  return result.data.response;
+  try {
+    const result = await chatFunction({ message, repoContext });
+    return result.data.response;
+  } catch (error) {
+    // ID token may have expired — force a refresh and retry once
+    if (error.code === "functions/unauthenticated" && auth.currentUser) {
+      await auth.currentUser.getIdToken(true);
+      const result = await chatFunction({ message, repoContext });
+      return result.data.response;
+    }
+    throw error;
+  }
 };
