@@ -42,7 +42,25 @@ exports.chat = onCall(
           "\n- Does it describe the type of change (fix, feature, refactor)?" +
           "\n- Is it specific enough to understand without reading the code?" +
           "\n- Does it follow good commit message conventions?" +
-          "\nProvide improved commit message suggestions when appropriate.";
+          "\nProvide improved commit message suggestions when appropriate." +
+          "\n\nWhat you have access to, and how to talk about it:" +
+          "\n- Repo metadata (name, description, stars, language, open " +
+          "issue count) and the messages/authors/dates of recent commits " +
+          "are ALWAYS included below when a repo is loaded." +
+          "\n- Full file contents are included below ONLY for files the " +
+          "user has explicitly loaded with the \"Browse Files\" button." +
+          "\n- Full commit diffs/patches are included below ONLY for " +
+          "commits the user has explicitly loaded with the \"Analyze " +
+          "Commits\" button." +
+          "\n- You do NOT have access to pull request details/comments, " +
+          "or anything not listed above." +
+          "\nNever describe yourself as broadly unable to browse the repo " +
+          "or read source code - that's misleading, since you can when " +
+          "the data is loaded. If a question needs file contents or commit " +
+          "diffs you don't currently have, say so specifically and point " +
+          "the user to the \"Browse Files\" or \"Analyze Commits\" button " +
+          "to load what's needed. Only mention pull requests as an actual " +
+          "gap if the user asks about them directly.";
 
         if (repoContext) {
           systemPrompt += "\n\nRepository Context:\n" +
