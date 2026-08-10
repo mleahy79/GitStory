@@ -37,6 +37,9 @@ const Chat = () => {
   const [loadingCommits, setLoadingCommits] = useState(false);
   const [selectedCommits, setSelectedCommits] = useState([]);
 
+  // Full assessment state
+  const [loadingAssessment, setLoadingAssessment] = useState(false);
+
   // Load repo context if URL provided
   useEffect(() => {
     if (repoUrl) {
@@ -217,29 +220,19 @@ const Chat = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!message.trim() || loading) return;
-
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    const userMessage = message.trim();
-    setMessage("");
+  // Sends a message to Claude, optionally overriding which loaded files
+  // go into the context (used by handleSubmit and runFullAssessment).
+  const sendToAssistant = async (userMessage, filesForContext = selectedFiles, contentsForContext = loadedFileContents) => {
     setError(null);
-
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
     setLoading(true);
 
     try {
-      // Build enhanced context with file contents
       const enhancedContext = repoContext ? {
         ...repoContext,
-        files: selectedFiles.map(path => ({
+        files: filesForContext.map(path => ({
           path,
-          content: loadedFileContents[path] || "[Loading...]",
+          content: contentsForContext[path] || "[Loading...]",
         })),
       } : null;
 
@@ -260,6 +253,116 @@ const Chat = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim() || loading) return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    const userMessage = message.trim();
+    setMessage("");
+    await sendToAssistant(userMessage);
+  };
+
+  // Auto-loads recent commit diffs + a handful of key files (README,
+  // package manifest, entry point) and sends one evidence-backed
+  // assessment prompt, skipping the manual browse/select steps.
+  const runFullAssessment = async () => {
+    if (!repoOwner || !repoName || loadingAssessment || loading) return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setLoadingAssessment(true);
+    setError(null);
+    showToast("Gathering commit diffs and key files...", "info");
+
+    try {
+      const commits = await getCommitsWithDetails(repoOwner, repoName, 8);
+
+      let tree = fileTree;
+      if (tree.length === 0) {
+        const branch = repoContext?.defaultBranch || "main";
+        const rawTree = await getRepoTree(repoOwner, repoName, branch);
+        tree = rawTree.tree
+          .filter(item =>
+            item.type === "blob" &&
+            !item.path.includes("node_modules") &&
+            !item.path.includes(".git") &&
+            !item.path.startsWith(".") &&
+            item.path.split("/").length <= 4
+          )
+          .sort((a, b) => a.path.localeCompare(b.path));
+        setFileTree(tree);
+      }
+
+      const keyFilePattern = /(^|\/)(readme(\.\w+)?|package\.json|requirements\.txt|go\.mod|cargo\.toml|pom\.xml)$/i;
+      const entryFilePattern = /(^|\/)(index|main|app)\.(js|jsx|ts|tsx|py|go)$/i;
+
+      // Prefer root-level files over nested ones (e.g. root README over
+      // examples/README.md) so the picks are actually representative.
+      const keyFiles = tree
+        .filter(item => keyFilePattern.test(item.path) || entryFilePattern.test(item.path))
+        .sort((a, b) => {
+          const depthDiff = a.path.split("/").length - b.path.split("/").length;
+          return depthDiff !== 0 ? depthDiff : a.path.localeCompare(b.path);
+        })
+        .slice(0, 5)
+        .map(item => item.path);
+
+      const fileContents = {};
+      await Promise.all(keyFiles.map(async (path) => {
+        try {
+          const content = await getFileContent(repoOwner, repoName, path);
+          fileContents[path] = content.decodedContent;
+        } catch {
+          // Skip files that fail to load
+        }
+      }));
+      const loadedKeyFiles = keyFiles.filter(path => fileContents[path] !== undefined);
+
+      setSelectedFiles(loadedKeyFiles);
+      setLoadedFileContents(prev => ({ ...prev, ...fileContents }));
+
+      let prompt = "Please give me a full developer health assessment of this repository using the evidence below - don't ask me to load more data first.\n\n";
+      prompt += "## Recent Commits (with diffs)\n\n";
+      commits.forEach((commit, idx) => {
+        prompt += `**Commit ${idx + 1}:** "${commit.message}" by ${commit.author}\n`;
+        if (commit.stats) {
+          prompt += `Stats: +${commit.stats.additions} -${commit.stats.deletions}\n`;
+        }
+        if (commit.files && commit.files.length > 0) {
+          commit.files.forEach(f => {
+            prompt += `- ${f.filename} (${f.status}): +${f.additions} -${f.deletions}\n`;
+            if (f.patch) {
+              prompt += `\`\`\`diff\n${f.patch}\n\`\`\`\n`;
+            }
+          });
+        }
+        prompt += "\n";
+      });
+
+      if (loadedKeyFiles.length > 0) {
+        prompt += `## Key Files\n\n${loadedKeyFiles.join(", ")} (included in the repository context)\n\n`;
+      }
+
+      prompt += "Please cover: 1) whether commit messages accurately describe the actual changes, 2) code quality/patterns/consistency, 3) architecture and technical debt symptoms, 4) best-practice adherence, 5) key recommendations.";
+
+      await sendToAssistant(prompt, loadedKeyFiles, fileContents);
+    } catch (err) {
+      const msg = "Failed to run full assessment. Try loading commits/files manually.";
+      setError(msg);
+      showToast(msg, "error");
+    } finally {
+      setLoadingAssessment(false);
     }
   };
 
@@ -422,6 +525,14 @@ const Chat = () => {
                     className="text-[#178582] text-sm hover:underline"
                   >
                     {loadingCommits ? "Loading..." : "Analyze Commits"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={runFullAssessment}
+                    disabled={loadingAssessment || loading}
+                    className="text-[#bfa174] text-sm hover:underline font-semibold"
+                  >
+                    {loadingAssessment ? "Assessing..." : "Full Assessment"}
                   </button>
                   <button
                     onClick={() => {
