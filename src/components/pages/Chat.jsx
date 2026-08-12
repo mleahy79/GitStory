@@ -222,9 +222,9 @@ const Chat = () => {
 
   // Sends a message to Claude, optionally overriding which loaded files
   // go into the context (used by handleSubmit and runFullAssessment).
-  const sendToAssistant = async (userMessage, filesForContext = selectedFiles, contentsForContext = loadedFileContents) => {
+  const sendToAssistant = async (userMessage, filesForContext = selectedFiles, contentsForContext = loadedFileContents, displayMessage = userMessage) => {
     setError(null);
-    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setMessages(prev => [...prev, { role: "user", content: userMessage, displayContent: displayMessage }]);
     setLoading(true);
 
     try {
@@ -356,7 +356,9 @@ const Chat = () => {
 
       prompt += "Please cover: 1) whether commit messages accurately describe the actual changes, 2) code quality/patterns/consistency, 3) architecture and technical debt symptoms, 4) best-practice adherence, 5) key recommendations.";
 
-      await sendToAssistant(prompt, loadedKeyFiles, fileContents);
+      const displaySummary = `Run a full developer health assessment using the last ${commits.length} commit${commits.length === 1 ? "" : "s"} (with diffs)${loadedKeyFiles.length > 0 ? ` and ${loadedKeyFiles.length} key file${loadedKeyFiles.length === 1 ? "" : "s"} (${loadedKeyFiles.join(", ")})` : ""}.`;
+
+      await sendToAssistant(prompt, loadedKeyFiles, fileContents, displaySummary);
     } catch (err) {
       const msg = "Failed to run full assessment. Try loading commits/files manually.";
       setError(msg);
@@ -379,7 +381,7 @@ const Chat = () => {
     const conversationHtml = messages.map(msg => `
       <div style="margin-bottom: 16px; padding: 12px; border-radius: 8px; background: ${msg.role === "user" ? "#178582" : "#f3f4f6"}; color: ${msg.role === "user" ? "white" : "#1f2937"};">
         <p style="font-weight: 600; margin-bottom: 4px;">${msg.role === "user" ? "You" : "SustainRx AI"}</p>
-        <p style="white-space: pre-wrap; margin: 0;">${msg.content}</p>
+        <p style="white-space: pre-wrap; margin: 0;">${msg.displayContent || msg.content}</p>
       </div>
     `).join("");
 
@@ -502,14 +504,14 @@ const Chat = () => {
           </form>
           {repoContext && (
             <div className="mt-3">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4 text-gray-400">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-gray-400">
                   <span className="text-[#178582] font-semibold">{repoContext.name}</span>
                   <span>{repoContext.language}</span>
                   <span>{repoContext.stars} stars</span>
                   <span>{repoContext.openIssues} issues</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={loadFileTree}
@@ -742,7 +744,7 @@ const Chat = () => {
                     }`}
                   >
                     {msg.role === "user" ? (
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                      <p className="whitespace-pre-wrap">{msg.displayContent || msg.content}</p>
                     ) : (
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}

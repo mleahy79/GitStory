@@ -21,6 +21,10 @@ This is an original product, not a clone or a tutorial build. Concept, design sy
 - **PDF export**: turn any report into a document you can print, file, or email
 - **Guardrails**: token caps and concurrency limits on AI calls to keep analysis fast and costs predictable
 
+## Known limitations
+
+Dependency and stack analysis is based on what a repo *declares* (package.json, requirements.txt, go.mod, etc.) via the GitHub API — it doesn't install anything or resolve the actual dependency tree (lockfile, node_modules, transitive packages). A dependency that's missing from the manifest but present transitively (or vice versa) won't be caught; the diagnosis reflects declared state, not resolved state.
+
 ## The medical metaphor
 
 The design system carries the diagnosis concept through the whole product, not as decoration but because the metaphor is accurate to what the tool does: examine, diagnose, prescribe. A codebase is a living thing that accumulates conditions over time, and most teams only look when something hurts. SustainRx is the checkup.
