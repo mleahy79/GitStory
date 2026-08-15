@@ -33,7 +33,7 @@ The design system carries the diagnosis concept through the whole product, not a
 
 ## Testing
 
-Component and unit tests run on Jest + React Testing Library (`npm test`), covering routing/auth guards, the repo-URL form, an API-driven list view with loading/error states, and the GitHub URL parser. CI runs the suite on every push via GitHub Actions.
+Component and unit tests run on Jest + React Testing Library (`npm test`), covering routing/auth guards, the repo-URL form, an API-driven list view with loading/error states, and the GitHub URL parser. CI runs `eslint` and the full test suite on every push via GitHub Actions.
 
 ## Stack
 
