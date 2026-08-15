@@ -11,7 +11,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
-    "react-router-dom": "^7.12.0",
+    "react-router-dom": "^7.18.2",
     "react-scripts": "5.0.1",
     "remark-gfm": "^4.0.1",
     "web-vitals": "^2.1.4"
@@ -26,6 +26,14 @@
     "extends": [
       "react-app",
       "react-app/jest"
+    ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-markdown|remark-.*|rehype-.*|unified|unist-.*|mdast-.*|micromark.*|hast-.*|property-information|space-separated-tokens|comma-separated-tokens|web-namespaces|zwitch|longest-streak|ccount|markdown-table|decode-named-character-reference|character-entities.*|trim-lines|vfile.*|bail|trough|is-plain-obj|devlop|estree-util-is-identifier-name|stringify-entities|html-url-attributes|hastscript)/)"
     ]
   },
   "browserslist": {

@@ -2,6 +2,8 @@
 
 **A diagnosis for your codebase.**
 
+[![Tests](https://github.com/mleahy79/GitStory/actions/workflows/tests.yml/badge.svg)](https://github.com/mleahy79/GitStory/actions/workflows/tests.yml)
+
 Live: [git-story-nine.vercel.app](https://git-story-nine.vercel.app)
 
 ---
@@ -29,13 +31,16 @@ Dependency and stack analysis is based on what a repo *declares* (package.json, 
 
 The design system carries the diagnosis concept through the whole product, not as decoration but because the metaphor is accurate to what the tool does: examine, diagnose, prescribe. A codebase is a living thing that accumulates conditions over time, and most teams only look when something hurts. SustainRx is the checkup.
 
+## Testing
+
+Component and unit tests run on Jest + React Testing Library (`npm test`), covering routing/auth guards, the repo-URL form, an API-driven list view with loading/error states, and the GitHub URL parser. CI runs the suite on every push via GitHub Actions.
+
 ## Stack
 
-- React, TypeScript, Tailwind CSS
+- React, Tailwind CSS
 - Firebase (auth and data layer)
 - GitHub OAuth
 - Claude API for analysis
-- Stripe for subscription billing
 - Deployed on Vercel
 
 ## Lineage
