@@ -45,7 +45,7 @@ const Home = () => {
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
+              className="px-6 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
             >
               Start Checkup
             </button>
@@ -71,14 +71,14 @@ const Home = () => {
 
         {/* Free trial CTA */}
         <div className="text-center mt-20">
-          <p className="text-gray-500 text-sm mb-2">Want the full experience?</p>
+          <p className="text-gray-400 text-sm mb-2">Want the full experience?</p>
           <button
             onClick={() => navigate("/onboarding/1")}
             className="px-8 py-3 bg-[#bfa174] text-[#0A1828] font-bold rounded-lg hover:bg-[#d4b68a] transition-colors text-lg"
           >
             Start Your Free Trial
           </button>
-          <p className="text-gray-600 text-xs mt-2">14 days free. No credit card required.</p>
+          <p className="text-gray-400 text-xs mt-2">14 days free. No credit card required.</p>
         </div>
         {/* AI / Vibe coding section */}
         <div className="mt-20">
@@ -95,7 +95,7 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
               <div className="text-2xl mb-3">&#x26A1;</div>
-              <h3 className="text-lg font-semibold text-[#178582] mb-2">
+              <h3 className="text-lg font-semibold text-[#22b0ab] mb-2">
                 Vibe Coding & AI Builders
               </h3>
               <p className="text-gray-400 text-sm">
@@ -108,7 +108,7 @@ const Home = () => {
 
             <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
               <div className="text-2xl mb-3">&#x1F469;&#x200D;&#x1F4BB;</div>
-              <h3 className="text-lg font-semibold text-[#178582] mb-2">
+              <h3 className="text-lg font-semibold text-[#22b0ab] mb-2">
                 Solo Devs & Small Teams
               </h3>
               <p className="text-gray-400 text-sm">
@@ -121,7 +121,7 @@ const Home = () => {
 
             <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
               <div className="text-2xl mb-3">&#x1F680;</div>
-              <h3 className="text-lg font-semibold text-[#178582] mb-2">
+              <h3 className="text-lg font-semibold text-[#22b0ab] mb-2">
                 No-Code to Real Code
               </h3>
               <p className="text-gray-400 text-sm">
@@ -134,7 +134,7 @@ const Home = () => {
 
             <div className="bg-[#1a2d3d] rounded-lg border border-gray-700 p-6">
               <div className="text-2xl mb-3">&#x1F91D;</div>
-              <h3 className="text-lg font-semibold text-[#178582] mb-2">
+              <h3 className="text-lg font-semibold text-[#22b0ab] mb-2">
                 Human + AI Collaboration
               </h3>
               <p className="text-gray-400 text-sm">
@@ -162,7 +162,7 @@ const Home = () => {
             >
               Get Started Free
             </button>
-            <p className="text-gray-600 text-xs mt-3">No credit card. No commitment. Just clarity.</p>
+            <p className="text-gray-400 text-xs mt-3">No credit card. No commitment. Just clarity.</p>
           </div>
         </div>
       </div>

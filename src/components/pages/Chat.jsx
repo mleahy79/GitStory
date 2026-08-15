@@ -459,7 +459,7 @@ const Chat = () => {
             </p>
             <button
               onClick={() => navigate("/login")}
-              className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
+              className="px-6 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
             >
               Log In
             </button>
@@ -547,7 +547,7 @@ const Chat = () => {
                       setSelectedCommits([]);
                       setShowCommitBrowser(false);
                     }}
-                    className="text-gray-500 hover:text-gray-300"
+                    className="text-gray-400 hover:text-gray-300"
                   >
                     Clear
                   </button>
@@ -557,7 +557,7 @@ const Chat = () => {
               {/* Selected Files */}
               {selectedFiles.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="text-gray-500 text-xs">Loaded files:</span>
+                  <span className="text-gray-400 text-xs">Loaded files:</span>
                   {selectedFiles.map(path => (
                     <span
                       key={path}
@@ -587,14 +587,14 @@ const Chat = () => {
               </h3>
               <button
                 onClick={() => setShowFileBrowser(false)}
-                className="text-gray-500 hover:text-white"
+                className="text-gray-400 hover:text-white"
               >
                 Close
               </button>
             </div>
             <div className="max-h-64 overflow-y-auto space-y-1">
               {fileTree.length === 0 ? (
-                <p className="text-gray-500 text-sm">No files found</p>
+                <p className="text-gray-400 text-sm">No files found</p>
               ) : (
                 fileTree.slice(0, 100).map(file => (
                   <button
@@ -617,7 +617,7 @@ const Chat = () => {
                 ))
               )}
               {fileTree.length > 100 && (
-                <p className="text-gray-500 text-xs text-center py-2">
+                <p className="text-gray-400 text-xs text-center py-2">
                   Showing first 100 files...
                 </p>
               )}
@@ -636,14 +636,14 @@ const Chat = () => {
                 {selectedCommits.length > 0 && (
                   <button
                     onClick={analyzeSelectedCommits}
-                    className="px-3 py-1 bg-[#178582] text-white text-sm rounded hover:bg-[#1a9d9a] transition-colors"
+                    className="px-3 py-1 bg-[#0f6b68] text-white text-sm rounded hover:bg-[#1a9d9a] transition-colors"
                   >
                     Analyze {selectedCommits.length} Commit(s)
                   </button>
                 )}
                 <button
                   onClick={() => setShowCommitBrowser(false)}
-                  className="text-gray-500 hover:text-white"
+                  className="text-gray-400 hover:text-white"
                 >
                   Close
                 </button>
@@ -651,7 +651,7 @@ const Chat = () => {
             </div>
             <div className="max-h-80 overflow-y-auto space-y-2">
               {detailedCommits.length === 0 ? (
-                <p className="text-gray-500 text-sm">No commits found</p>
+                <p className="text-gray-400 text-sm">No commits found</p>
               ) : (
                 detailedCommits.map(commit => (
                   <button
@@ -668,7 +668,7 @@ const Chat = () => {
                         <p className="text-gray-200 text-sm font-medium truncate">
                           {commit.message?.split("\n")[0]}
                         </p>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                           <span>{commit.sha.substring(0, 7)}</span>
                           <span>{commit.author}</span>
                           <span>{new Date(commit.date).toLocaleDateString()}</span>
@@ -683,7 +683,7 @@ const Chat = () => {
                           </div>
                         )}
                         {commit.files && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-400 mt-1">
                             {commit.files.length} file(s)
                           </p>
                         )}
@@ -702,7 +702,7 @@ const Chat = () => {
                             </span>
                           ))}
                           {commit.files.length > 5 && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-400">
                               +{commit.files.length - 5} more
                             </span>
                           )}
@@ -719,7 +719,7 @@ const Chat = () => {
         {/* Chat Messages */}
         <div className="bg-[#1a2d3d] rounded-t-lg border border-gray-700 border-b-0 p-6 min-h-[400px] h-[65vh] overflow-y-auto">
           {messages.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">
+            <div className="text-center text-gray-400 py-12">
               <p>Start a conversation with the AI assistant.</p>
               <p className="text-sm mt-2">
                 {repoContext
@@ -739,7 +739,7 @@ const Chat = () => {
                   <div
                     className={`max-w-[80%] px-4 py-3 rounded-lg ${
                       msg.role === "user"
-                        ? "bg-[#178582] text-white"
+                        ? "bg-[#0f6b68] text-white"
                         : "bg-[#0A1828] text-gray-200 border border-gray-700"
                     }`}
                   >
@@ -824,14 +824,14 @@ const Chat = () => {
             <button
               type="submit"
               disabled={loading || !message.trim()}
-              className="px-6 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              className="px-6 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
             >
               {loading ? "Sending..." : "Send"}
             </button>
           </div>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <p className="text-gray-500 text-xs">Shift + Enter for new line</p>
+              <p className="text-gray-400 text-xs">Shift + Enter for new line</p>
               {messages.length > 0 && (
                 <button
                   type="button"

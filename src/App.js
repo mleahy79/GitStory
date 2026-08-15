@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -5,24 +6,29 @@ import { OnboardingProvider } from './context/OnboardingContext';
 import { ToastProvider } from './context/ToastContext';
 import { RepoProvider } from './context/RepoContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
+import LoadingSpinner from './components/shared/LoadingSpinner';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+// Home stays eager: it's the landing route for most visits, and lazy-loading
+// it would trade a network waterfall for no real bundle-size win. Everything
+// else — including Chat, which pulls in the heavy react-markdown/remark
+// toolchain — is fetched on demand.
 import Home from './components/pages/Home';
-import Analyze from './components/pages/Analyze';
-import Login from './components/pages/Login';
-import Chat from './components/pages/Chat';
-import Document from './components/pages/Document';
-import Hotspots from './components/pages/Hotspots';
-import Branches from './components/pages/Branches';
-import Profile from './components/pages/Profile';
-import Settings from './components/pages/Settings';
-import Pricing from './components/pages/Pricing';
-import Privacy from './components/pages/Privacy';
-import Terms from './components/pages/Terms';
-import About from './components/pages/About';
-import NotFound from './components/pages/NotFound';
-import OnboardingPage from './components/pages/onboarding/OnboardingPage';
-import TrialPage from './components/pages/trial/TrialPage';
+const Analyze = lazy(() => import('./components/pages/Analyze'));
+const Login = lazy(() => import('./components/pages/Login'));
+const Chat = lazy(() => import('./components/pages/Chat'));
+const Document = lazy(() => import('./components/pages/Document'));
+const Hotspots = lazy(() => import('./components/pages/Hotspots'));
+const Branches = lazy(() => import('./components/pages/Branches'));
+const Profile = lazy(() => import('./components/pages/Profile'));
+const Settings = lazy(() => import('./components/pages/Settings'));
+const Pricing = lazy(() => import('./components/pages/Pricing'));
+const Privacy = lazy(() => import('./components/pages/Privacy'));
+const Terms = lazy(() => import('./components/pages/Terms'));
+const About = lazy(() => import('./components/pages/About'));
+const NotFound = lazy(() => import('./components/pages/NotFound'));
+const OnboardingPage = lazy(() => import('./components/pages/onboarding/OnboardingPage'));
+const TrialPage = lazy(() => import('./components/pages/trial/TrialPage'));
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -50,24 +56,26 @@ function AppLayout() {
     <div className="App min-h-screen flex flex-col">
       {!isFunnel && <Navbar />}
       <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/analyze" element={<Analyze />} />
-          <Route path="/hotspots" element={<Hotspots />} />
-          <Route path="/branches" element={<Branches />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-          <Route path="/document" element={<ProtectedRoute><Document /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/onboarding/:step" element={<OnboardingPage />} />
-          <Route path="/trial/:step" element={<TrialPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/analyze" element={<Analyze />} />
+            <Route path="/hotspots" element={<Hotspots />} />
+            <Route path="/branches" element={<Branches />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/document" element={<ProtectedRoute><Document /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/onboarding/:step" element={<OnboardingPage />} />
+            <Route path="/trial/:step" element={<TrialPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </ErrorBoundary>
       {!isFunnel && <Footer />}
     </div>

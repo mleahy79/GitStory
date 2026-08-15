@@ -38,14 +38,14 @@ const OnboardingStep2 = ({ onNext, onBack }) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
         >
           Back
         </button>
         <button
           onClick={onNext}
           disabled={!answers.step2}
-          className="px-8 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="px-8 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Next
         </button>

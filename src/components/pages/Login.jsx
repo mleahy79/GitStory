@@ -93,25 +93,25 @@ const Login = () => {
           {/* Divider */}
           <div className="flex items-center my-6">
             <div className="flex-1 border-t border-gray-600"></div>
-            <span className="px-4 text-gray-500 text-sm">or</span>
+            <span className="px-4 text-gray-400 text-sm">or</span>
             <div className="flex-1 border-t border-gray-600"></div>
           </div>
 
           {/* Continue without login */}
           <a
             href="/"
-            className="block w-full text-center px-4 py-3 border border-[#178582] text-[#178582] font-semibold rounded-lg hover:bg-[#178582] hover:text-white transition-colors"
+            className="block w-full text-center px-4 py-3 border border-[#178582] text-[#178582] font-semibold rounded-lg hover:bg-[#0f6b68] hover:text-white transition-colors"
           >
             Continue without signing in
           </a>
 
-          <p className="mt-4 text-center text-gray-500 text-sm">
+          <p className="mt-4 text-center text-gray-400 text-sm">
             Walk-in patients welcome for public repo checkups
           </p>
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-gray-500 text-sm">
+        <p className="mt-6 text-center text-gray-400 text-sm">
           By signing in, you agree to our Terms of Service
         </p>
       </div>

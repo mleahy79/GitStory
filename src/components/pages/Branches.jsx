@@ -116,7 +116,7 @@ const Branches = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-[#178582] hover:bg-[#0d6b66] disabled:opacity-50 text-white font-bold rounded-lg transition"
+            className="px-6 py-3 bg-[#0f6b68] hover:bg-[#0d6b66] disabled:opacity-50 text-white font-bold rounded-lg transition"
           >
             {loading ? "Loading..." : "Analyze"}
           </button>
@@ -238,7 +238,7 @@ const Branches = () => {
                               <p className="text-gray-200 font-semibold line-clamp-2">
                                 {commit.commit.message.split("\n")[0]}
                               </p>
-                              <p className="text-gray-500 text-sm mt-1">
+                              <p className="text-gray-400 text-sm mt-1">
                                 {commit.commit.author.name} •{" "}
                                 {new Date(commit.commit.author.date).toLocaleDateString()}
                               </p>
@@ -272,7 +272,7 @@ const Branches = () => {
                             <p className="text-gray-200 font-mono text-sm break-all">
                               {file.filename}
                             </p>
-                            <p className="text-gray-500 text-xs mt-1">
+                            <p className="text-gray-400 text-xs mt-1">
                               {file.status === "added"
                                 ? "Added"
                                 : file.status === "removed"
@@ -343,7 +343,7 @@ const Branches = () => {
                           {branch.protected ? (
                             <span className="text-green-400 text-xs font-semibold">✓ Yes</span>
                           ) : (
-                            <span className="text-gray-500 text-xs">No</span>
+                            <span className="text-gray-400 text-xs">No</span>
                           )}
                         </td>
                       </tr>

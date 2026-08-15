@@ -38,7 +38,7 @@ const OnboardingStep4 = ({ onNext, onBack }) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
         >
           Back
         </button>

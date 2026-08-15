@@ -51,12 +51,12 @@ const Settings = () => {
     <div className="flex items-center justify-between py-4 border-b border-gray-700 last:border-0">
       <div>
         <p className="text-white font-medium text-sm">{label}</p>
-        {description && <p className="text-gray-500 text-xs mt-0.5">{description}</p>}
+        {description && <p className="text-gray-400 text-xs mt-0.5">{description}</p>}
       </div>
       <button
         onClick={() => onChange(!enabled)}
         className={`relative w-11 h-6 rounded-full transition-colors ${
-          enabled ? "bg-[#178582]" : "bg-gray-600"
+          enabled ? "bg-[#0f6b68]" : "bg-gray-600"
         }`}
       >
         <span
@@ -115,7 +115,7 @@ const Settings = () => {
           <div className="flex items-center justify-between bg-[#0A1828] rounded-lg p-4">
             <div>
               <p className="text-white font-semibold">Free Trial</p>
-              <p className="text-gray-500 text-sm">14 days remaining — no charge until trial ends</p>
+              <p className="text-gray-400 text-sm">14 days remaining — no charge until trial ends</p>
             </div>
             <button className="px-4 py-2 text-sm border border-[#bfa174] text-[#bfa174] rounded-lg hover:bg-[#bfa174] hover:text-[#0A1828] transition-colors font-semibold">
               Upgrade Plan
@@ -129,7 +129,7 @@ const Settings = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white font-medium text-sm">Delete Account</p>
-              <p className="text-gray-500 text-xs">Permanently delete your account and all data</p>
+              <p className="text-gray-400 text-xs">Permanently delete your account and all data</p>
             </div>
             <button
               onClick={() => setShowDeleteConfirm(true)}
@@ -144,7 +144,7 @@ const Settings = () => {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            className="px-8 py-3 bg-[#178582] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors"
+            className="px-8 py-3 bg-[#0f6b68] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors"
           >
             Save Settings
           </button>
@@ -159,7 +159,7 @@ const Settings = () => {
             <p className="text-gray-300 mb-2">
               This will permanently delete your account and all associated data.
             </p>
-            <p className="text-gray-500 text-sm mb-6">This action cannot be undone.</p>
+            <p className="text-gray-400 text-sm mb-6">This action cannot be undone.</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}

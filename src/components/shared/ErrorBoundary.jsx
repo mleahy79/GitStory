@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
                   this.setState({ hasError: false });
                   window.location.reload();
                 }}
-                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
+                className="px-6 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors"
               >
                 Refresh Page
               </button>

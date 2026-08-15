@@ -106,19 +106,19 @@ const Profile = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-[#178582]">{stats.scans}</p>
-              <p className="text-xs text-gray-500 mt-1">Repo Scans</p>
+              <p className="text-xs text-gray-400 mt-1">Repo Scans</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-[#178582]">{stats.queries}</p>
-              <p className="text-xs text-gray-500 mt-1">AI Queries</p>
+              <p className="text-xs text-gray-400 mt-1">AI Queries</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-[#178582]">{stats.reports}</p>
-              <p className="text-xs text-gray-500 mt-1">Reports</p>
+              <p className="text-xs text-gray-400 mt-1">Reports</p>
             </div>
             <div className="bg-[#0A1828] rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-[#178582]">{stats.hotspots}</p>
-              <p className="text-xs text-gray-500 mt-1">Hotspot Scans</p>
+              <p className="text-xs text-gray-400 mt-1">Hotspot Scans</p>
             </div>
           </div>
         </div>

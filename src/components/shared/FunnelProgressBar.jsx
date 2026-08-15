@@ -9,7 +9,7 @@ const FunnelProgressBar = ({ currentStep, totalSteps, label }) => (
         <div
           key={i}
           className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-            i < currentStep ? "bg-[#178582]" : "bg-gray-700"
+            i < currentStep ? "bg-[#0f6b68]" : "bg-gray-700"
           }`}
         />
       ))}

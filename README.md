@@ -35,6 +35,18 @@ The design system carries the diagnosis concept through the whole product, not a
 
 Component and unit tests run on Jest + React Testing Library (`npm test`), covering routing/auth guards, the repo-URL form, an API-driven list view with loading/error states, and the GitHub URL parser. CI runs `eslint` and the full test suite on every push via GitHub Actions.
 
+## Accessibility & performance
+
+Audited with Lighthouse and manual keyboard-nav checks; fixes applied and re-measured:
+
+| Page | Accessibility | Performance |
+|---|---|---|
+| Home | 92 → **100** | 65 → **84** |
+| Branches | 92 → **100** | — |
+| Pricing | 94 → **100** | — |
+
+What changed: text/background color pairs that fell short of the WCAG AA 4.5:1 contrast ratio (buttons, secondary copy, card headings) were adjusted app-wide; a footer navigation label used a heading tag that broke the page's heading order and was changed to a non-heading element; a broken GitHub link was fixed. The performance gain came from splitting routes with `React.lazy`/`Suspense` — the initial JS bundle dropped from ~201 kB to ~123 kB gzipped by deferring pages like Chat (which pulls in `react-markdown`'s dependency tree) until they're actually visited. Keyboard focus states were already handled correctly on form inputs (`focus:ring`/`focus:border` styles replacing the removed default outline) and didn't need changes.
+
 ## Stack
 
 - React, Tailwind CSS

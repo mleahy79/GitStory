@@ -95,7 +95,7 @@ const Analyze = () => {
               <button
                 type="submit"
                 disabled={!repoInput.trim()}
-                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
+                className="px-6 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
               >
                 Analyze
               </button>
@@ -163,7 +163,7 @@ const Analyze = () => {
                   <span className={`font-semibold ${busFactorColor(busFactor.count)}`}>
                     {busFactor.count}
                   </span>
-                  <span className="text-gray-500 ml-1">
+                  <span className="text-gray-400 ml-1">
                     ({busFactor.count} person{busFactor.count !== 1 ? "s" : ""} own 80% of commits)
                   </span>
                 </span>
@@ -189,7 +189,7 @@ const Analyze = () => {
                   />
                   <div>
                     <p className="text-gray-200 text-sm">{contributor.login}</p>
-                    <p className="text-gray-500 text-xs">{contributor.contributions} commits</p>
+                    <p className="text-gray-400 text-xs">{contributor.contributions} commits</p>
                   </div>
                 </a>
               ))}
@@ -213,11 +213,11 @@ const Analyze = () => {
                       <div key={lang}>
                         <div className="flex justify-between text-sm mb-1">
                           <span className="text-gray-200">{lang}</span>
-                          <span className="text-gray-500">{percentage}%</span>
+                          <span className="text-gray-400">{percentage}%</span>
                         </div>
                         <div className="w-full bg-[#0A1828] rounded-full h-2">
                           <div
-                            className="bg-[#178582] h-2 rounded-full"
+                            className="bg-[#0f6b68] h-2 rounded-full"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -242,7 +242,7 @@ const Analyze = () => {
                   <span className={`font-semibold ${issueSignals.openRate > 60 ? "text-orange-400" : "text-green-400"}`}>
                     {issueSignals.openRate}%
                   </span>
-                  <span className="text-gray-500 ml-1">
+                  <span className="text-gray-400 ml-1">
                     ({issueSignals.openCount} of {issueSignals.total} issues open)
                   </span>
                 </span>
@@ -258,7 +258,7 @@ const Analyze = () => {
             </div>
           )}
           {issues.length === 0 ? (
-            <p className="text-gray-500">No issues found.</p>
+            <p className="text-gray-400">No issues found.</p>
           ) : (
             <div className="space-y-3">
               {issues.slice(0, 10).map((issue) => (
@@ -284,7 +284,7 @@ const Analyze = () => {
                     )}
                     <span className="text-gray-200 text-sm">{issue.title}</span>
                   </div>
-                  <div className="flex gap-4 mt-1 text-xs text-gray-500">
+                  <div className="flex gap-4 mt-1 text-xs text-gray-400">
                     <span>#{issue.number}</span>
                     <span>by {issue.user?.login}</span>
                     <span>{new Date(issue.created_at).toLocaleDateString()}</span>
@@ -322,7 +322,7 @@ const Analyze = () => {
                 <p className="text-gray-200 font-medium">
                   {commit.commit.message.split("\n")[0]}
                 </p>
-                <div className="flex gap-4 mt-1 text-sm text-gray-500">
+                <div className="flex gap-4 mt-1 text-sm text-gray-400">
                   <span>{commit.commit.author?.name || "Unknown"}</span>
                   <span>
                     {new Date(commit.commit.author?.date).toLocaleDateString()}

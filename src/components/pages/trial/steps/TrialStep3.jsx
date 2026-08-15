@@ -75,8 +75,8 @@ const TrialStep3 = () => {
         >
           <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Monthly</p>
           <p className="text-white text-2xl font-bold">$29</p>
-          <p className="text-gray-500 text-xs">per month</p>
-          <p className="text-gray-600 text-xs mt-2">Billed monthly</p>
+          <p className="text-gray-400 text-xs">per month</p>
+          <p className="text-gray-400 text-xs mt-2">Billed monthly</p>
         </button>
 
         {/* Annual */}
@@ -93,8 +93,8 @@ const TrialStep3 = () => {
           </span>
           <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Annual</p>
           <p className="text-white text-2xl font-bold">$19</p>
-          <p className="text-gray-500 text-xs">per month</p>
-          <p className="text-gray-600 text-xs mt-2">Billed $228/year</p>
+          <p className="text-gray-400 text-xs">per month</p>
+          <p className="text-gray-400 text-xs mt-2">Billed $228/year</p>
         </button>
       </div>
 
@@ -110,7 +110,7 @@ const TrialStep3 = () => {
         ))}
       </div>
 
-      <p className="text-gray-500 text-xs text-center mb-4">
+      <p className="text-gray-400 text-xs text-center mb-4">
         Your card is not charged for 14 days. Cancel before then and you owe nothing.
       </p>
 
@@ -132,7 +132,7 @@ const TrialStep3 = () => {
       {/* Secondary option */}
       <button
         onClick={handleSignUp}
-        className="w-full mt-3 text-center text-gray-500 hover:text-gray-300 text-sm transition-colors"
+        className="w-full mt-3 text-center text-gray-400 hover:text-gray-300 text-sm transition-colors"
       >
         Just start the monthly trial instead
       </button>

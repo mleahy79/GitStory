@@ -32,7 +32,7 @@ const PLANS = [
       "Historical trend reports",
     ],
     cta: "Start Free Trial",
-    ctaStyle: "bg-[#178582] text-white hover:bg-[#1a9d9a]",
+    ctaStyle: "bg-[#0f6b68] text-white hover:bg-[#1a9d9a]",
     route: "/onboarding/1",
     highlighted: true,
   },
@@ -84,19 +84,19 @@ const Pricing = () => {
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-xs font-bold uppercase bg-[#178582] text-white rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-xs font-bold uppercase bg-[#0f6b68] text-white rounded-full">
                   {plan.badge}
                 </span>
               )}
 
               <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
-              <p className="text-gray-500 text-sm mb-4">{plan.description}</p>
+              <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
 
               <div className="mb-6">
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="text-gray-400 text-sm">{plan.period}</span>
                 {plan.billed && (
-                  <p className="text-gray-600 text-xs mt-1">{plan.billed}</p>
+                  <p className="text-gray-400 text-xs mt-1">{plan.billed}</p>
                 )}
               </div>
 

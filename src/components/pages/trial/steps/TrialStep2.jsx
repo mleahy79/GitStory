@@ -45,7 +45,7 @@ const TrialStep2 = ({ onNext }) => {
             <span className="text-2xl">{item.icon}</span>
             <div>
               <p className="text-white font-semibold text-sm">{item.title}</p>
-              <p className="text-gray-500 text-xs mt-0.5">{item.description}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{item.description}</p>
             </div>
           </div>
         ))}
@@ -53,12 +53,12 @@ const TrialStep2 = ({ onNext }) => {
 
       <button
         onClick={onNext}
-        className="w-full py-3 bg-[#178582] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors text-lg"
+        className="w-full py-3 bg-[#0f6b68] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors text-lg"
       >
         Sounds good — continue
       </button>
 
-      <p className="text-center text-gray-600 text-xs mt-4">
+      <p className="text-center text-gray-400 text-xs mt-4">
         Used by engineering teams who care about long-term code quality
       </p>
     </FunnelCard>

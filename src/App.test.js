@@ -39,8 +39,9 @@ test('renders the homepage at the root route', () => {
   ).toBeInTheDocument();
 });
 
-test('renders the 404 page for an unknown route', () => {
+test('renders the 404 page for an unknown route', async () => {
   window.history.pushState({}, '', '/this-route-does-not-exist');
   render(<App />);
-  expect(screen.getByText(/page not found/i)).toBeInTheDocument();
+  // NotFound is code-split (React.lazy), so it resolves after a microtask.
+  expect(await screen.findByText(/page not found/i)).toBeInTheDocument();
 });

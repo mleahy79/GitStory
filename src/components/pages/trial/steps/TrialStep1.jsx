@@ -36,7 +36,7 @@ const TrialStep1 = ({ onNext }) => {
 
       <button
         onClick={onNext}
-        className="w-full py-3 bg-[#178582] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors text-lg"
+        className="w-full py-3 bg-[#0f6b68] text-white font-bold rounded-lg hover:bg-[#1a9d9a] transition-colors text-lg"
       >
         Start My Free Trial
       </button>

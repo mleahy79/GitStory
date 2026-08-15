@@ -149,7 +149,7 @@ const Hotspots = () => {
               <button
                 type="submit"
                 disabled={!repoInput.trim()}
-                className="px-6 py-3 bg-[#178582] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
+                className="px-6 py-3 bg-[#0f6b68] text-white font-semibold rounded-lg hover:bg-[#1a9d9a] transition-colors disabled:opacity-50"
               >
                 Scan Hotspots
               </button>
@@ -233,7 +233,7 @@ const Hotspots = () => {
             High-Churn Files ({fileHotspots.length})
           </h3>
           {fileHotspots.length === 0 ? (
-            <p className="text-gray-500">No file hotspots detected.</p>
+            <p className="text-gray-400">No file hotspots detected.</p>
           ) : (
             <div className="space-y-3">
               {fileHotspots.map((file) => (
@@ -255,7 +255,7 @@ const Hotspots = () => {
                       style={{ width: `${(file.commitCount / maxCommits) * 100}%` }}
                     />
                   </div>
-                  <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                  <div className="flex flex-wrap gap-4 text-xs text-gray-400">
                     <span className="text-green-400">+{file.totalAdditions}</span>
                     <span className="text-red-400">-{file.totalDeletions}</span>
                     <span>{file.authors.length} contributor{file.authors.length !== 1 ? "s" : ""}</span>
@@ -271,11 +271,11 @@ const Hotspots = () => {
           <h3 className="text-lg font-semibold text-[#bfa174] mb-4">
             Stale Issues ({staleIssues.length})
           </h3>
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-gray-400 text-sm mb-4">
             Open issues older than 30 days — potential unresolved debt.
           </p>
           {staleIssues.length === 0 ? (
-            <p className="text-gray-500">No stale issues found — looking healthy!</p>
+            <p className="text-gray-400">No stale issues found — looking healthy!</p>
           ) : (
             <div className="space-y-3">
               {staleIssues.map((issue) => (
@@ -292,7 +292,7 @@ const Hotspots = () => {
                     </span>
                     <span className="text-gray-200 text-sm">{issue.title}</span>
                   </div>
-                  <div className="flex gap-4 text-xs text-gray-500">
+                  <div className="flex gap-4 text-xs text-gray-400">
                     <span>#{issue.number}</span>
                     <span>by {issue.user?.login}</span>
                     <span>opened {new Date(issue.created_at).toLocaleDateString()}</span>

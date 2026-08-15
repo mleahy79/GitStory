@@ -13,7 +13,7 @@ const Footer = () => {
 
           {/* Services */}
           <div className="text-center">
-            <h4 className="text-[#bfa174] font-semibold mb-3">Services</h4>
+            <p className="text-[#bfa174] font-semibold mb-3">Services</p>
             <ul className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 text-sm">
               <li>
                 <Link to="/" className="hover:text-[#178582] transition-colors">
@@ -45,11 +45,11 @@ const Footer = () => {
 
           {/* Connect */}
           <div className="text-center md:text-left">
-            <h4 className="text-[#bfa174] font-semibold mb-3 md:ml-8">Connect</h4>
+            <p className="text-[#bfa174] font-semibold mb-3 md:ml-8">Connect</p>
             <ul className="space-y-2 text-sm md:ml-8">
               <li className="flex justify-center md:justify-start">
                 <a
-                  href="https://github.com/mlehay79"
+                  href="https://github.com/mleahy79"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 hover:text-[#178582] transition-colors"

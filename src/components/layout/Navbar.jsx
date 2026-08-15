@@ -125,7 +125,7 @@ const Navbar = () => {
               <div className="flex gap-3">
                 <button
                   onClick={handleLogin}
-                  className="px-3 py-2 text-sm lg:px-4 lg:text-base text-[#178582] border border-[#178582] rounded-lg hover:bg-[#178582] hover:text-[#0a1828] transition font-semibold"
+                  className="px-3 py-2 text-sm lg:px-4 lg:text-base text-[#178582] border border-[#178582] rounded-lg hover:bg-[#0f6b68] hover:text-[#0a1828] transition font-semibold"
                 >
                   Sign In
                 </button>
